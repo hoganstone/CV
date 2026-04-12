@@ -1,0 +1,548 @@
+# 定義 HTML 內容
+html_content = """
+<!DOCTYPE html>
+<html lang="zh-TW" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>石恆文 Hogan Shih | 全端 AI 網頁開發工程師</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300;400;500;700;900&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['"Noto Sans TC"', 'sans-serif'],
+                    },
+                    colors: {
+                        primary: '#1e40af', // blue-800
+                        secondary: '#3b82f6', // blue-500
+                        dark: '#0f172a', // slate-900
+                        light: '#f8fafc', // slate-50
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body { font-family: 'Noto Sans TC', sans-serif; }
+        .hero-bg {
+            background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+        }
+        .timeline-line::before {
+            content: '';
+            position: absolute;
+            left: 0.75rem;
+            top: 0;
+            bottom: 0;
+            width: 2px;
+            background-color: #e2e8f0;
+        }
+        @media (min-width: 768px) {
+            .timeline-line::before {
+                left: 50%;
+                transform: translateX(-50%);
+            }
+        }
+    </style>
+</head>
+<body class="bg-light text-slate-700 antialiased selection:bg-secondary selection:text-white">
+
+    <nav class="fixed w-full z-50 bg-white/90 backdrop-blur-md shadow-sm border-b border-slate-200 transition-all duration-300" id="navbar">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between h-16 items-center">
+                <div class="flex-shrink-0 flex items-center">
+                    <a href="#home">
+                        <img src="https://images.unsplash.com/photo-1560250097-0b93528c311a?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=256&q=80" alt="Hogan Shih" class="h-10 w-10 rounded-full object-cover border-2 border-secondary hover:border-primary transition-colors">
+                    </a>
+                </div>
+                <div class="hidden md:block">
+                    <div class="ml-10 flex items-baseline space-x-8">
+                        <a href="#about" class="hover:text-secondary text-slate-600 px-3 py-2 rounded-md text-sm font-medium transition-colors">個人簡介</a>
+                        <a href="#skills" class="hover:text-secondary text-slate-600 px-3 py-2 rounded-md text-sm font-medium transition-colors">專業技能</a>
+                        <a href="#projects" class="hover:text-secondary text-slate-600 px-3 py-2 rounded-md text-sm font-medium transition-colors">專案實績</a>
+                        <a href="#experience" class="hover:text-secondary text-slate-600 px-3 py-2 rounded-md text-sm font-medium transition-colors">工作經歷</a>
+                    </div>
+                </div>
+                <div class="md:hidden flex items-center">
+                    <button id="mobile-menu-btn" class="text-slate-600 hover:text-primary focus:outline-none">
+                        <i class="fas fa-bars text-2xl"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+        <div id="mobile-menu" class="hidden md:hidden bg-white border-t border-slate-100">
+            <div class="px-2 pt-2 pb-3 space-y-1 sm:px-3 shadow-lg">
+                <a href="#about" class="mobile-link block px-3 py-2 rounded-md text-base font-medium text-slate-700 hover:text-primary hover:bg-slate-50">個人簡介</a>
+                <a href="#skills" class="mobile-link block px-3 py-2 rounded-md text-base font-medium text-slate-700 hover:text-primary hover:bg-slate-50">專業技能</a>
+                <a href="#projects" class="mobile-link block px-3 py-2 rounded-md text-base font-medium text-slate-700 hover:text-primary hover:bg-slate-50">專案實績</a>
+                <a href="#experience" class="mobile-link block px-3 py-2 rounded-md text-base font-medium text-slate-700 hover:text-primary hover:bg-slate-50">工作經歷</a>
+            </div>
+        </div>
+    </nav>
+
+    <section id="home" class="hero-bg text-white pt-32 pb-20 md:pt-40 md:pb-28 px-4">
+        <div class="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between">
+            <div class="md:w-2/3 md:pr-10 text-center md:text-left z-10">
+                <p class="text-secondary font-semibold tracking-wide uppercase mb-2">Hello, I'm</p>
+                <h1 class="text-4xl md:text-5xl lg:text-6xl font-bold mb-4 leading-tight">石恆文 <span class="text-3xl md:text-4xl text-slate-300 font-light">Hogan Shih</span></h1>
+                <h2 class="text-xl md:text-2xl text-slate-300 mb-6 font-medium border-l-4 border-secondary pl-3 inline-block md:block">全端 AI 網頁開發工程師 | IT 系統管理 | 資料分析</h2>
+                <p class="text-slate-400 text-lg mb-8 max-w-2xl leading-relaxed">
+                    擁有 20 年跨產業工程與資訊管理經驗，擅長將業務需求精準轉化為可維護的系統架構，兼具技術開發與跨部門溝通的軟硬實力。
+                </p>
+                <div class="flex flex-col sm:flex-row gap-4 justify-center md:justify-start">
+                    <a href="#contact" class="bg-secondary hover:bg-blue-600 text-white font-bold py-3 px-8 rounded-full transition-all duration-300 shadow-lg shadow-blue-500/30 flex items-center justify-center">
+                        <i class="fas fa-envelope mr-2"></i> 聯絡我
+                    </a>
+                    <a href="#projects" class="bg-transparent border border-slate-400 hover:border-white hover:bg-white/10 text-white font-bold py-3 px-8 rounded-full transition-all duration-300 flex items-center justify-center">
+                        <i class="fas fa-laptop-code mr-2"></i> 查看作品
+                    </a>
+                </div>
+            </div>
+            <div class="md:w-1/3 mt-12 md:mt-0 flex justify-center relative">
+                <div class="relative w-64 h-64 md:w-80 md:h-80 rounded-full border-4 border-secondary/30 p-2 overflow-hidden shadow-2xl">
+                    <img src="https://images.unsplash.com/photo-1560250097-0b93528c311a?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=512&q=80" alt="石恆文" class="w-full h-full object-cover rounded-full bg-slate-800">
+                </div>
+                <div class="absolute bottom-4 right-4 bg-white text-dark py-2 px-4 rounded-full shadow-xl font-bold flex items-center animate-bounce">
+                    <i class="fab fa-vuejs text-green-500 text-xl mr-2"></i> Vue 3 / Nuxt
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <div id="contact" class="bg-white shadow-md relative z-20 -mt-8 mx-4 md:mx-auto max-w-5xl rounded-xl p-6 md:p-8 flex flex-wrap justify-around items-center gap-6">
+        <div class="flex items-center text-slate-600 hover:text-primary transition-colors">
+            <div class="w-12 h-12 bg-blue-50 rounded-full flex items-center justify-center text-secondary mr-4">
+                <i class="fas fa-map-marker-alt text-xl"></i>
+            </div>
+            <div>
+                <p class="text-sm text-slate-400">Location</p>
+                <p class="font-medium">台北市萬華區</p>
+            </div>
+        </div>
+        <div class="flex items-center text-slate-600 hover:text-primary transition-colors">
+            <div class="w-12 h-12 bg-blue-50 rounded-full flex items-center justify-center text-secondary mr-4">
+                <i class="fas fa-phone-alt text-xl"></i>
+            </div>
+            <div>
+                <p class="text-sm text-slate-400">Phone</p>
+                <p class="font-medium">0921-898-920</p>
+            </div>
+        </div>
+        <div class="flex items-center text-slate-600 hover:text-primary transition-colors">
+            <div class="w-12 h-12 bg-blue-50 rounded-full flex items-center justify-center text-secondary mr-4">
+                <i class="fas fa-envelope text-xl"></i>
+            </div>
+            <div>
+                <p class="text-sm text-slate-400">Email</p>
+                <a href="mailto:Hogan.shih@gmail.com" class="font-medium">Hogan.shih@gmail.com</a>
+            </div>
+        </div>
+    </div>
+
+    <section id="about" class="py-20 bg-light">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-16">
+                <h2 class="text-3xl md:text-4xl font-bold text-dark mb-4">關於我 <span class="text-secondary">About Me</span></h2>
+                <div class="w-24 h-1 bg-secondary mx-auto rounded-full"></div>
+            </div>
+            <div class="bg-white rounded-2xl shadow-sm border border-slate-100 p-8 md:p-12">
+                <p class="text-lg text-slate-600 leading-relaxed mb-6">
+                    擁有 20 年跨產業工程與資訊管理經驗，近年深耕全端 AI 網頁開發，具備 Vue 3 / Nuxt、PHP+Laravel、Python (Django/Flask) 完整前後端開發能力。
+                </p>
+                <p class="text-lg text-slate-600 leading-relaxed mb-6">
+                    曾獨立設計並上線鋼鐵產業統計付費平台，整合 SQL Server 資料庫與公會原產地證明系統，年收入貢獻超過 200 萬。我擅長將複雜的業務邏輯與流程，轉化為直覺、高效且可維護的數位系統架構。
+                </p>
+                <p class="text-lg text-slate-600 leading-relaxed">
+                    在 AI 工具快速發展的環境下，我積極導入 Spec-Driven Development (SDD) 開發模式，透過 Claude、Gemini 等 AI 助手輔助，結合 UI 快速原型設計，大幅提升前後台系統建構的效率。此外，具備豐富的專案管理與 ISO 9001 品質稽核經驗，能有效進行跨部門溝通與資源協調。
+                </p>
+            </div>
+        </div>
+    </section>
+
+    <section id="skills" class="py-20 bg-white">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-16">
+                <h2 class="text-3xl md:text-4xl font-bold text-dark mb-4">專業技能 <span class="text-secondary">Core Skills</span></h2>
+                <div class="w-24 h-1 bg-secondary mx-auto rounded-full"></div>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                <div class="bg-slate-50 rounded-xl p-8 border border-slate-100 hover:shadow-lg transition-shadow duration-300 group">
+                    <div class="w-14 h-14 bg-blue-100 text-blue-600 rounded-lg flex items-center justify-center text-2xl mb-6 group-hover:bg-blue-600 group-hover:text-white transition-colors">
+                        <i class="fas fa-desktop"></i>
+                    </div>
+                    <h3 class="text-xl font-bold text-dark mb-4">前端開發</h3>
+                    <div class="flex flex-wrap gap-2">
+                        <span class="px-3 py-1 bg-white border border-slate-200 rounded-full text-sm font-medium text-slate-600 shadow-sm">Vue 3 / Nuxt 3</span>
+                        <span class="px-3 py-1 bg-white border border-slate-200 rounded-full text-sm font-medium text-slate-600 shadow-sm">JavaScript</span>
+                        <span class="px-3 py-1 bg-white border border-slate-200 rounded-full text-sm font-medium text-slate-600 shadow-sm">Tailwind CSS</span>
+                        <span class="px-3 py-1 bg-white border border-slate-200 rounded-full text-sm font-medium text-slate-600 shadow-sm">Bootstrap</span>
+                        <span class="px-3 py-1 bg-white border border-slate-200 rounded-full text-sm font-medium text-slate-600 shadow-sm">Figma / Shadcn</span>
+                        <span class="px-3 py-1 bg-white border border-slate-200 rounded-full text-sm font-medium text-slate-600 shadow-sm">React</span>
+                    </div>
+                </div>
+
+                <div class="bg-slate-50 rounded-xl p-8 border border-slate-100 hover:shadow-lg transition-shadow duration-300 group">
+                    <div class="w-14 h-14 bg-green-100 text-green-600 rounded-lg flex items-center justify-center text-2xl mb-6 group-hover:bg-green-600 group-hover:text-white transition-colors">
+                        <i class="fas fa-server"></i>
+                    </div>
+                    <h3 class="text-xl font-bold text-dark mb-4">後端開發</h3>
+                    <div class="flex flex-wrap gap-2">
+                        <span class="px-3 py-1 bg-white border border-slate-200 rounded-full text-sm font-medium text-slate-600 shadow-sm">PHP + Laravel 12</span>
+                        <span class="px-3 py-1 bg-white border border-slate-200 rounded-full text-sm font-medium text-slate-600 shadow-sm">Node.js</span>
+                        <span class="px-3 py-1 bg-white border border-slate-200 rounded-full text-sm font-medium text-slate-600 shadow-sm">Python (Django/Flask)</span>
+                        <span class="px-3 py-1 bg-white border border-slate-200 rounded-full text-sm font-medium text-slate-600 shadow-sm">.NET C#</span>
+                        <span class="px-3 py-1 bg-white border border-slate-200 rounded-full text-sm font-medium text-slate-600 shadow-sm">RESTful API</span>
+                    </div>
+                </div>
+
+                <div class="bg-slate-50 rounded-xl p-8 border border-slate-100 hover:shadow-lg transition-shadow duration-300 group">
+                    <div class="w-14 h-14 bg-purple-100 text-purple-600 rounded-lg flex items-center justify-center text-2xl mb-6 group-hover:bg-purple-600 group-hover:text-white transition-colors">
+                        <i class="fas fa-database"></i>
+                    </div>
+                    <h3 class="text-xl font-bold text-dark mb-4">資料庫與系統架構</h3>
+                    <div class="flex flex-wrap gap-2">
+                        <span class="px-3 py-1 bg-white border border-slate-200 rounded-full text-sm font-medium text-slate-600 shadow-sm">SQL Server</span>
+                        <span class="px-3 py-1 bg-white border border-slate-200 rounded-full text-sm font-medium text-slate-600 shadow-sm">MySQL</span>
+                        <span class="px-3 py-1 bg-white border border-slate-200 rounded-full text-sm font-medium text-slate-600 shadow-sm">Firebase</span>
+                        <span class="px-3 py-1 bg-white border border-slate-200 rounded-full text-sm font-medium text-slate-600 shadow-sm">Linux</span>
+                        <span class="px-3 py-1 bg-white border border-slate-200 rounded-full text-sm font-medium text-slate-600 shadow-sm">Git</span>
+                        <span class="px-3 py-1 bg-white border border-slate-200 rounded-full text-sm font-medium text-slate-600 shadow-sm">Hadoop (HDFS/YARN)</span>
+                    </div>
+                </div>
+
+                <div class="bg-slate-50 rounded-xl p-8 border border-slate-100 hover:shadow-lg transition-shadow duration-300 group">
+                    <div class="w-14 h-14 bg-yellow-100 text-yellow-600 rounded-lg flex items-center justify-center text-2xl mb-6 group-hover:bg-yellow-600 group-hover:text-white transition-colors">
+                        <i class="fas fa-robot"></i>
+                    </div>
+                    <h3 class="text-xl font-bold text-dark mb-4">AI 輔助開發與工具</h3>
+                    <div class="flex flex-wrap gap-2">
+                        <span class="px-3 py-1 bg-white border border-slate-200 rounded-full text-sm font-medium text-slate-600 shadow-sm">Claude Pro</span>
+                        <span class="px-3 py-1 bg-white border border-slate-200 rounded-full text-sm font-medium text-slate-600 shadow-sm">Gemini Pro</span>
+                        <span class="px-3 py-1 bg-white border border-slate-200 rounded-full text-sm font-medium text-slate-600 shadow-sm">Spec-Driven Dev</span>
+                        <span class="px-3 py-1 bg-white border border-slate-200 rounded-full text-sm font-medium text-slate-600 shadow-sm">Skitich / Pencil</span>
+                    </div>
+                </div>
+
+                <div class="bg-slate-50 rounded-xl p-8 border border-slate-100 hover:shadow-lg transition-shadow duration-300 group lg:col-span-2">
+                    <div class="w-14 h-14 bg-red-100 text-red-600 rounded-lg flex items-center justify-center text-2xl mb-6 group-hover:bg-red-600 group-hover:text-white transition-colors">
+                        <i class="fas fa-tasks"></i>
+                    </div>
+                    <h3 class="text-xl font-bold text-dark mb-4">專案管理與品保</h3>
+                    <div class="flex flex-wrap gap-2">
+                        <span class="px-3 py-1 bg-white border border-slate-200 rounded-full text-sm font-medium text-slate-600 shadow-sm">IPMA D 級專案管理師</span>
+                        <span class="px-3 py-1 bg-white border border-slate-200 rounded-full text-sm font-medium text-slate-600 shadow-sm">ISO 9001:2015 主導稽核員</span>
+                        <span class="px-3 py-1 bg-white border border-slate-200 rounded-full text-sm font-medium text-slate-600 shadow-sm">SAP ERP (PP/MM/SD)</span>
+                        <span class="px-3 py-1 bg-white border border-slate-200 rounded-full text-sm font-medium text-slate-600 shadow-sm">PDM</span>
+                        <span class="px-3 py-1 bg-white border border-slate-200 rounded-full text-sm font-medium text-slate-600 shadow-sm">QFD / TRIZ / SPC</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="projects" class="py-20 bg-slate-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-16">
+                <h2 class="text-3xl md:text-4xl font-bold text-dark mb-4">專案實績 <span class="text-secondary">Portfolio</span></h2>
+                <div class="w-24 h-1 bg-secondary mx-auto rounded-full"></div>
+                <p class="mt-4 text-slate-600 max-w-2xl mx-auto">點擊按鈕可直接檢視前台或後台 Demo 系統。這些系統展示了從前端切版、API 串接到資料庫設計的完整開發能力。</p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                <div class="bg-white rounded-xl shadow-md overflow-hidden hover:-translate-y-2 transition-transform duration-300 flex flex-col h-full border border-slate-100">
+                    <div class="h-48 bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center text-white relative">
+                        <i class="fas fa-recycle text-6xl opacity-30 absolute"></i>
+                        <h3 class="text-2xl font-bold z-10 text-center px-4">資源再生協會<br>網站與管理系統</h3>
+                    </div>
+                    <div class="p-6 flex-grow flex flex-col justify-between">
+                        <div>
+                            <div class="flex flex-wrap gap-2 mb-4">
+                                <span class="text-xs font-semibold bg-blue-100 text-blue-700 px-2 py-1 rounded">Nuxt.js</span>
+                                <span class="text-xs font-semibold bg-green-100 text-green-700 px-2 py-1 rounded">Node.js</span>
+                                <span class="text-xs font-semibold bg-purple-100 text-purple-700 px-2 py-1 rounded">RESTful API</span>
+                            </div>
+                            <p class="text-slate-600 text-sm mb-6">為 RRA 資源再生協會建置之官方網站與專屬後台管理系統，提供完善的內容發布與資料管理功能。</p>
+                        </div>
+                        <div class="flex gap-2">
+                            <a href="https://rra-website.vercel.app/" target="_blank" rel="noopener noreferrer" class="flex-1 text-center bg-slate-100 hover:bg-slate-200 text-slate-700 text-sm font-medium py-2 px-4 rounded transition-colors">前台 Demo</a>
+                            <a href="https://rra-website.vercel.app/admin" target="_blank" rel="noopener noreferrer" class="flex-1 text-center bg-secondary hover:bg-blue-600 text-white text-sm font-medium py-2 px-4 rounded transition-colors">後台 Demo</a>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-white rounded-xl shadow-md overflow-hidden hover:-translate-y-2 transition-transform duration-300 flex flex-col h-full border border-slate-100">
+                    <div class="h-48 bg-gradient-to-br from-slate-700 to-slate-900 flex items-center justify-center text-white relative">
+                        <i class="fas fa-industry text-6xl opacity-30 absolute"></i>
+                        <h3 class="text-2xl font-bold z-10 text-center px-4">鋼鐵公會統計網 <br> DEMO 平台</h3>
+                    </div>
+                    <div class="p-6 flex-grow flex flex-col justify-between">
+                        <div>
+                            <div class="flex flex-wrap gap-2 mb-4">
+                                <span class="text-xs font-semibold bg-blue-100 text-blue-700 px-2 py-1 rounded">Nuxt 3</span>
+                                <span class="text-xs font-semibold bg-red-100 text-red-700 px-2 py-1 rounded">Laravel 12</span>
+                            </div>
+                            <p class="text-slate-600 text-sm mb-6">建構鋼鐵產業統計資料庫之展示與查詢平台，前台提供資料視覺化與搜尋，後台負責資料更新與會員權限管理。</p>
+                        </div>
+                        <div class="flex gap-2">
+                            <a href="https://tsiia-web.vercel.app/" target="_blank" rel="noopener noreferrer" class="flex-1 text-center bg-slate-100 hover:bg-slate-200 text-slate-700 text-sm font-medium py-2 px-4 rounded transition-colors">前台 Demo</a>
+                            <a href="https://tsiia-web.vercel.app/login" target="_blank" rel="noopener noreferrer" class="flex-1 text-center bg-secondary hover:bg-blue-600 text-white text-sm font-medium py-2 px-4 rounded transition-colors">後台 Demo</a>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-white rounded-xl shadow-md overflow-hidden hover:-translate-y-2 transition-transform duration-300 flex flex-col h-full border border-slate-100">
+                    <div class="h-48 bg-gradient-to-br from-teal-500 to-emerald-600 flex items-center justify-center text-white relative">
+                        <i class="fas fa-users-cog text-6xl opacity-30 absolute"></i>
+                        <h3 class="text-2xl font-bold z-10 text-center px-4">鋼鐵聯合會<br>公會系統 & 會籍統計</h3>
+                    </div>
+                    <div class="p-6 flex-grow flex flex-col justify-between">
+                        <div>
+                            <div class="flex flex-wrap gap-2 mb-4">
+                                <span class="text-xs font-semibold bg-green-100 text-green-700 px-2 py-1 rounded">Vue 3</span>
+                                <span class="text-xs font-semibold bg-blue-100 text-blue-700 px-2 py-1 rounded">Nuxt</span>
+                                <span class="text-xs font-semibold bg-yellow-100 text-yellow-700 px-2 py-1 rounded">Express/Node</span>
+                            </div>
+                            <p class="text-slate-600 text-sm mb-6">開發鋼鐵公會聯合會的對外網站與會籍統計管理系統，數位化整合傳統會務管理流程。</p>
+                        </div>
+                        <div class="flex flex-col gap-2">
+                            <div class="flex gap-2">
+                                <a href="https://steel-guild-vue.vercel.app/" target="_blank" rel="noopener noreferrer" class="flex-1 text-center bg-slate-100 hover:bg-slate-200 text-slate-700 text-sm font-medium py-2 px-4 rounded transition-colors">聯合會前台</a>
+                                <a href="https://steel-guild-vue.vercel.app/admin" target="_blank" rel="noopener noreferrer" class="flex-1 text-center border border-slate-200 hover:bg-slate-50 text-slate-700 text-sm font-medium py-2 px-4 rounded transition-colors">聯合會後台</a>
+                            </div>
+                            <a href="https://steelmember.vercel.app/admin/login" target="_blank" rel="noopener noreferrer" class="w-full text-center bg-secondary hover:bg-blue-600 text-white text-sm font-medium py-2 px-4 rounded transition-colors">會籍統計系統 Demo</a>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-white rounded-xl shadow-md overflow-hidden hover:-translate-y-2 transition-transform duration-300 flex flex-col h-full border border-slate-100 lg:col-start-2">
+                    <div class="h-48 bg-gradient-to-br from-orange-400 to-red-500 flex items-center justify-center text-white relative">
+                        <i class="fas fa-utensils text-6xl opacity-30 absolute"></i>
+                        <h3 class="text-2xl font-bold z-10 text-center px-4">海石日式料理<br>線上訂餐網</h3>
+                    </div>
+                    <div class="p-6 flex-grow flex flex-col justify-between">
+                        <div>
+                            <div class="flex flex-wrap gap-2 mb-4">
+                                <span class="text-xs font-semibold bg-green-100 text-green-700 px-2 py-1 rounded">Vue.js</span>
+                                <span class="text-xs font-semibold bg-slate-100 text-slate-700 px-2 py-1 rounded">六角 API</span>
+                            </div>
+                            <p class="text-slate-600 text-sm mb-6">包含完整購物車流程的電子商務 SPA (Single Page Application)，具備前台商品展示選購與後台商品庫存上架管理。</p>
+                        </div>
+                        <div class="flex gap-2">
+                            <a href="https://hoganstone.github.io/japanese-restaurant/#/" target="_blank" rel="noopener noreferrer" class="flex-1 text-center bg-slate-100 hover:bg-slate-200 text-slate-700 text-sm font-medium py-2 px-4 rounded transition-colors">購物車前台</a>
+                            <a href="https://hoganstone.github.io/japanese-restaurant/#/admin/products" target="_blank" rel="noopener noreferrer" class="flex-1 text-center bg-secondary hover:bg-blue-600 text-white text-sm font-medium py-2 px-4 rounded transition-colors">管理後台</a>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </section>
+
+    <section id="experience" class="py-20 bg-white">
+        <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-16">
+                <h2 class="text-3xl md:text-4xl font-bold text-dark mb-4">工作經歷 <span class="text-secondary">Experience</span></h2>
+                <div class="w-24 h-1 bg-secondary mx-auto rounded-full"></div>
+            </div>
+
+            <div class="relative timeline-line">
+                <div class="relative pl-8 md:pl-0 mb-12">
+                    <div class="md:flex items-center justify-between w-full">
+                        <div class="hidden md:block w-5/12 text-right pr-8">
+                            <span class="text-secondary font-bold text-lg">1999 - 2018</span>
+                            <p class="text-slate-500 font-medium">19年資歷</p>
+                        </div>
+                        <div class="absolute left-0 md:left-1/2 w-6 h-6 rounded-full bg-secondary border-4 border-white shadow -translate-x-[11px] md:-translate-x-1/2 mt-1.5 md:mt-0 z-10"></div>
+                        <div class="w-full md:w-5/12 md:pl-8">
+                            <div class="bg-slate-50 p-6 rounded-xl border border-slate-100 shadow-sm hover:shadow-md transition-shadow">
+                                <div class="md:hidden text-secondary font-bold text-sm mb-2">1999 - 2018</div>
+                                <h3 class="text-xl font-bold text-dark">資訊組 組長</h3>
+                                <h4 class="text-lg text-slate-600 mb-3">台灣鋼鐵工業同業公會</h4>
+                                <ul class="list-disc list-inside text-sm text-slate-600 space-y-2">
+                                    <li><span class="font-medium text-slate-700">系統重構與開發：</span>使用 .NET、PHP、JavaScript 等技術取代原 IBM AS400，獨立建構 Web 化資訊平台。</li>
+                                    <li><span class="font-medium text-slate-700">創造營收：</span>規劃運作台灣原產地證明簽發系統，年收入貢獻約 200 萬元。開發付費產業統計查詢網站。</li>
+                                    <li><span class="font-medium text-slate-700">IT 基礎架構管理：</span>統籌維護 Firewall、Web/Mail Server、網域及軟硬體設備。</li>
+                                    <li><span class="font-medium text-slate-700">政府專案主導：</span>完成經濟部商業司 PKI 標案（約 150 萬元）。</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="relative pl-8 md:pl-0 mb-12">
+                    <div class="md:flex items-center justify-between w-full flex-row-reverse">
+                        <div class="hidden md:block w-5/12 text-left pl-8">
+                            <span class="text-secondary font-bold text-lg">1997 - 1997</span>
+                        </div>
+                        <div class="absolute left-0 md:left-1/2 w-6 h-6 rounded-full bg-slate-300 border-4 border-white shadow -translate-x-[11px] md:-translate-x-1/2 mt-1.5 md:mt-0 z-10"></div>
+                        <div class="w-full md:w-5/12 md:pr-8">
+                            <div class="bg-slate-50 p-6 rounded-xl border border-slate-100 shadow-sm hover:shadow-md transition-shadow text-left md:text-right">
+                                <div class="md:hidden text-secondary font-bold text-sm mb-2">1997</div>
+                                <h3 class="text-xl font-bold text-dark">品保經理</h3>
+                                <h4 class="text-lg text-slate-600 mb-3">美商捷普科技 Jabil</h4>
+                                <p class="text-sm text-slate-600 leading-relaxed mb-2">負責 LCD TV 產品品質驗證（DQA）與可靠度驗證（RA），涵蓋安規及 EMI 測試。維護 ISO 9000/14000 品質系統，主持跨國英文品質會議與供應商稽核管理。</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="relative pl-8 md:pl-0 mb-12">
+                    <div class="md:flex items-center justify-between w-full">
+                        <div class="hidden md:block w-5/12 text-right pr-8">
+                            <span class="text-secondary font-bold text-lg">1996 - 1997</span>
+                        </div>
+                        <div class="absolute left-0 md:left-1/2 w-6 h-6 rounded-full bg-slate-300 border-4 border-white shadow -translate-x-[11px] md:-translate-x-1/2 mt-1.5 md:mt-0 z-10"></div>
+                        <div class="w-full md:w-5/12 md:pl-8">
+                            <div class="bg-slate-50 p-6 rounded-xl border border-slate-100 shadow-sm hover:shadow-md transition-shadow">
+                                <div class="md:hidden text-secondary font-bold text-sm mb-2">1996 - 1997</div>
+                                <h3 class="text-xl font-bold text-dark">視訊系統處 / 產品發展部 經理</h3>
+                                <h4 class="text-lg text-slate-600 mb-3">瑞相科技（力晶&瑞薩合資）</h4>
+                                <p class="text-sm text-slate-600 leading-relaxed">主導 ATSC 數位電視 SOC 晶片及軟硬體開發設計管理。負責 IC 產品 Roadmap 規劃、處理客戶 RFI/RFQ，並協助客戶設計開發平台導入量產。</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="relative pl-8 md:pl-0 mb-4">
+                    <div class="md:flex items-center justify-between w-full flex-row-reverse">
+                        <div class="hidden md:block w-5/12 text-left pl-8">
+                            <span class="text-secondary font-bold text-lg">1986 - 1996</span>
+                            <p class="text-slate-500 font-medium">早期重要經歷</p>
+                        </div>
+                        <div class="absolute left-0 md:left-1/2 w-6 h-6 rounded-full bg-slate-300 border-4 border-white shadow -translate-x-[11px] md:-translate-x-1/2 mt-1.5 md:mt-0 z-10"></div>
+                        <div class="w-full md:w-5/12 md:pr-8">
+                            <div class="bg-slate-50 p-6 rounded-xl border border-slate-100 shadow-sm hover:shadow-md transition-shadow text-left md:text-right">
+                                <div class="md:hidden text-secondary font-bold text-sm mb-2">1986 - 1996</div>
+                                <h3 class="text-lg font-bold text-dark mb-2">研發 / 專案 / 產銷主管</h3>
+                                <p class="text-sm text-slate-600 mb-1"><span class="font-semibold">智邦科技：</span>專案經理 (WiFi/Bluetooth/WiMAX 開發)</p>
+                                <p class="text-sm text-slate-600 mb-1"><span class="font-semibold">廣輝電子(友達)：</span>專案副理 (六代廠 LCD-TV 新產品開發)</p>
+                                <p class="text-sm text-slate-600 mb-1"><span class="font-semibold">瀚宇彩晶：</span>試產線主管 / 客戶品質服務副理</p>
+                                <p class="text-sm text-slate-600"><span class="font-semibold">精英電腦 / 力太電子：</span>製程工程師 / 生管課長</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="py-20 bg-slate-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-12">
+                <div>
+                    <h2 class="text-2xl font-bold text-dark mb-8 flex items-center"><i class="fas fa-graduation-cap text-secondary mr-3"></i> 學歷背景</h2>
+                    <div class="space-y-6">
+                        <div class="bg-white p-6 rounded-xl shadow-sm border border-slate-100 flex items-start">
+                            <div class="bg-blue-100 text-blue-600 p-3 rounded-lg mr-4">
+                                <i class="fas fa-university text-xl"></i>
+                            </div>
+                            <div>
+                                <h3 class="font-bold text-lg text-dark">國立台北科技大學</h3>
+                                <p class="text-slate-600">工業工程與管理研究所 (碩士)</p>
+                                <p class="text-slate-400 text-sm mt-1">2009.06</p>
+                            </div>
+                        </div>
+                        <div class="bg-white p-6 rounded-xl shadow-sm border border-slate-100 flex items-start">
+                            <div class="bg-blue-100 text-blue-600 p-3 rounded-lg mr-4">
+                                <i class="fas fa-university text-xl"></i>
+                            </div>
+                            <div>
+                                <h3 class="font-bold text-lg text-dark">義守大學</h3>
+                                <p class="text-slate-600">工業工程管理系 (學士)</p>
+                                <p class="text-slate-400 text-sm mt-1">1997.06</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div>
+                    <h2 class="text-2xl font-bold text-dark mb-8 flex items-center"><i class="fas fa-certificate text-secondary mr-3"></i> 專業認證</h2>
+                    <div class="bg-white rounded-xl shadow-sm border border-slate-100 p-6">
+                        <ul class="space-y-4">
+                            <li class="flex items-center text-slate-700">
+                                <i class="fas fa-check-circle text-green-500 mr-3 text-lg"></i>
+                                <span class="font-medium">Microsoft Python 微軟認證</span>
+                            </li>
+                            <li class="flex items-center text-slate-700">
+                                <i class="fas fa-check-circle text-green-500 mr-3 text-lg"></i>
+                                <span class="font-medium">Google Gemini AI 專業教育認證</span>
+                            </li>
+                            <li class="flex items-center text-slate-700">
+                                <i class="fas fa-check-circle text-green-500 mr-3 text-lg"></i>
+                                <span class="font-medium">IPMA D 級專案管理師</span>
+                            </li>
+                            <li class="flex items-center text-slate-700">
+                                <i class="fas fa-check-circle text-green-500 mr-3 text-lg"></i>
+                                <span class="font-medium">SGS / AFNOR ISO 9001:2015 主導稽核員</span>
+                            </li>
+                        </ul>
+                    </div>
+                    
+                    <div class="mt-8 bg-blue-50 border border-blue-100 rounded-xl p-6 flex items-start">
+                        <i class="fas fa-quote-left text-blue-300 text-2xl mr-4 mt-1"></i>
+                        <div>
+                            <h4 class="font-bold text-dark text-lg mb-1">推薦人</h4>
+                            <p class="text-slate-700">黃孝信 <span class="text-sm text-slate-500 ml-2">台灣資源再生協會 前理事長</span></p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <footer class="bg-dark text-white py-10">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col md:flex-row justify-between items-center">
+            <div class="mb-4 md:mb-0">
+                <span class="text-2xl font-bold tracking-wider">Hogan.S</span>
+                <p class="text-slate-400 text-sm mt-1">全端 AI 網頁開發工程師</p>
+            </div>
+            <div class="flex space-x-6 text-xl">
+                <a href="mailto:Hogan.shih@gmail.com" class="text-slate-400 hover:text-white transition-colors"><i class="fas fa-envelope"></i></a>
+                <a href="#" class="text-slate-400 hover:text-white transition-colors"><i class="fab fa-github"></i></a>
+                <a href="#" class="text-slate-400 hover:text-white transition-colors"><i class="fab fa-linkedin"></i></a>
+            </div>
+        </div>
+        <div class="text-center text-slate-500 text-sm mt-8 border-t border-slate-800 pt-8">
+            &copy; 2026 石恆文 Hogan Shih. All Rights Reserved.
+        </div>
+    </footer>
+
+    <script>
+        // Mobile Menu Toggle
+        const btn = document.getElementById('mobile-menu-btn');
+        const menu = document.getElementById('mobile-menu');
+        const links = document.querySelectorAll('.mobile-link');
+
+        btn.addEventListener('click', () => {
+            menu.classList.toggle('hidden');
+        });
+
+        links.forEach(link => {
+            link.addEventListener('click', () => {
+                menu.classList.add('hidden');
+            });
+        });
+
+        // Navbar scroll effect
+        window.addEventListener('scroll', () => {
+            const nav = document.getElementById('navbar');
+            if (window.scrollY > 10) {
+                nav.classList.add('shadow-md');
+                nav.classList.remove('shadow-sm');
+            } else {
+                nav.classList.remove('shadow-md');
+                nav.classList.add('shadow-sm');
+            }
+        });
+    </script>
+</body>
+</html>
+"""
+
+# 儲存為檔案
+with open("Hogan_Shih_Resume.html", "w", encoding="utf-8") as f:
+    f.write(html_content)
