@@ -632,8 +632,10 @@ function saveSkillModal(id) {
   s.icon = document.getElementById('sk-icon').value;
   s.colorTheme = document.getElementById('sk-color').value;
   s.span = parseInt(document.getElementById('sk-span').value) || 1;
+  saveCvData();
   closeModal();
   renderSkillsList();
+  showToast('✓ 已儲存');
 }
 
 function collectSkills() { return cvData.skills; }
@@ -843,8 +845,10 @@ function saveProjectModal(id) {
       fullWidth: document.getElementById(`link-full-${lid}`).checked
     };
   }).filter(Boolean);
+  saveCvData();
   closeModal();
   renderProjectsList();
+  showToast('✓ 已儲存');
 }
 
 function collectProjects() { return cvData.projects; }
@@ -975,8 +979,10 @@ function saveExpModal(id) {
   } else {
     e.content = rawContent.split('\n').map(l=>l.trim()).filter(Boolean);
   }
+  saveCvData();
   closeModal();
   renderExperienceList();
+  showToast('✓ 已儲存');
 }
 
 function collectExperience() { return cvData.experience; }
