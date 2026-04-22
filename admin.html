@@ -651,8 +651,10 @@ function renderProjectsList() {
     <div class="card">
       <div class="flex items-center justify-between">
         <div class="flex items-center gap-3">
-          <div class="w-10 h-10 bg-gradient-to-br ${p.gradient} rounded-lg flex items-center justify-center text-white">
-            <i class="${p.icon} text-sm"></i>
+          <div class="w-10 h-10 rounded-lg overflow-hidden flex-shrink-0 ${p.image?'':'bg-gradient-to-br '+p.gradient+' flex items-center justify-center text-white'}">
+            ${p.image
+              ? `<img src="${p.image}" style="width:100%;height:100%;object-fit:cover;">`
+              : `<i class="${p.icon} text-sm"></i>`}
           </div>
           <div>
             <div class="font-bold text-slate-800">${p.title.replace('<br>','・')}</div>
@@ -701,8 +703,22 @@ function openProjectModal(id) {
       <button onclick="closeModal()" class="text-slate-400 hover:text-slate-600"><i class="fas fa-times text-xl"></i></button>
     </div>
     <div class="field-group"><label>標題（可用 &lt;br&gt; 換行）</label><input type="text" id="pj-title" value="${p.title}"></div>
+    <div class="field-group">
+      <label>封面圖片</label>
+      <div class="flex gap-2 items-center mb-2">
+        <input type="text" id="pj-image" value="${p.image||''}" placeholder="貼上圖片網址（https://...）" style="flex:1" oninput="previewPjImage()">
+        <label class="btn btn-ghost text-sm flex-shrink-0" style="cursor:pointer;padding:8px 14px;">
+          上傳圖片
+          <input type="file" accept="image/*" onchange="uploadPjImage(this)" style="display:none">
+        </label>
+      </div>
+      <div id="pj-image-preview" class="rounded-lg overflow-hidden" style="height:${p.image?'120px':'0'};transition:height 0.2s;">
+        ${p.image?`<img src="${p.image}" style="width:100%;height:120px;object-fit:cover;">`:''}
+      </div>
+      <p class="text-xs text-slate-400 mt-1">未設定圖片時使用漸層色背景</p>
+    </div>
     <div class="grid grid-cols-2 gap-4">
-      <div class="field-group"><label>漸層色 class</label>
+      <div class="field-group"><label>漸層色備用背景</label>
         <select id="pj-gradient">${gradientOptions.map(g=>`<option value="${g}" ${g===p.gradient?'selected':''}>${g}</option>`).join('')}</select>
       </div>
       <div class="field-group"><label>圖示 class</label>
@@ -763,6 +779,29 @@ function removeLinkRow(projId, idx) {
   if (p) p.links.splice(idx, 1);
 }
 
+function uploadPjImage(input) {
+  const file = input.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = e => {
+    document.getElementById('pj-image').value = e.target.result;
+    previewPjImage();
+  };
+  reader.readAsDataURL(file);
+}
+
+function previewPjImage() {
+  const src = document.getElementById('pj-image').value.trim();
+  const wrap = document.getElementById('pj-image-preview');
+  if (src) {
+    wrap.style.height = '120px';
+    wrap.innerHTML = `<img src="${src}" style="width:100%;height:120px;object-fit:cover;" onerror="this.parentElement.style.height='0'">`;
+  } else {
+    wrap.style.height = '0';
+    wrap.innerHTML = '';
+  }
+}
+
 function addPjTag(projId) {
   const text = document.getElementById('pj-tag-text').value.trim();
   const color = document.getElementById('pj-tag-color').value;
@@ -784,6 +823,7 @@ function saveProjectModal(id) {
   const p = cvData.projects.find(x => x.id === id);
   if (!p) return;
   p.title = document.getElementById('pj-title').value;
+  p.image = document.getElementById('pj-image').value.trim();
   p.gradient = document.getElementById('pj-gradient').value;
   p.icon = document.getElementById('pj-icon').value;
   p.description = document.getElementById('pj-desc').value;

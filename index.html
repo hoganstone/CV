@@ -408,10 +408,17 @@ function renderProjects(projects) {
 
     const tagsHtml = p.techTags.map(t=>`<span class="text-xs font-semibold ${tagColorMap[t.color]||tagColorMap.slate} px-2 py-1 rounded">${t.text}</span>`).join('');
 
+    const headerStyle = p.image
+      ? `style="background-image:url('${p.image}');background-size:cover;background-position:center;"`
+      : '';
+    const headerBg = p.image ? '' : `bg-gradient-to-br ${p.gradient}`;
+    const overlay = p.image ? '<div class="absolute inset-0 bg-black/50"></div>' : '';
+
     return `<div class="bg-white rounded-xl shadow-md overflow-hidden hover:-translate-y-2 transition-transform duration-300 flex flex-col h-full border border-slate-100">
-      <div class="h-48 bg-gradient-to-br ${p.gradient} flex items-center justify-center text-white relative">
-        <i class="${p.icon} text-6xl opacity-30 absolute"></i>
-        <h3 class="text-2xl font-bold z-10 text-center px-4">${p.title}</h3>
+      <div class="h-48 ${headerBg} flex items-center justify-center text-white relative" ${headerStyle}>
+        ${overlay}
+        <i class="${p.icon} text-6xl opacity-20 absolute z-0"></i>
+        <h3 class="text-2xl font-bold z-10 text-center px-4 drop-shadow-md">${p.title}</h3>
       </div>
       <div class="p-6 flex-grow flex flex-col justify-between">
         <div>
