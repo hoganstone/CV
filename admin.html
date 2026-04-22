@@ -696,6 +696,8 @@ function moveProject(id, dir) {
 function openProjectModal(id) {
   const p = cvData.projects.find(x => x.id === id);
   if (!p) return;
+  // Ensure every link has a stable unique id
+  p.links = (p.links || []).map(l => l.lid ? l : { lid: uid(), ...l });
   const techTagColors = ['blue','green','purple','red','yellow','slate','teal'];
   document.getElementById('modal-content').innerHTML = `
     <div class="flex justify-between items-center mb-4">
@@ -740,7 +742,7 @@ function openProjectModal(id) {
     </div>
     <div class="field-group">
       <label>連結按鈕</label>
-      <div id="pj-links-container">${(p.links||[]).map((l,li)=>renderLinkRow(id,li,l)).join('')}</div>
+      <div id="pj-links-container">${(p.links||[]).map(l=>renderLinkRow(id,l.lid,l)).join('')}</div>
       <button class="btn btn-ghost text-sm mt-2" onclick="addLink('${id}')">+ 新增連結</button>
     </div>
     <div class="flex justify-end gap-3 mt-6">
@@ -750,33 +752,34 @@ function openProjectModal(id) {
   document.getElementById('modal').classList.remove('hidden');
 }
 
-function renderLinkRow(projId, idx, l) {
-  return `<div class="flex gap-2 mb-2 items-center" id="link-row-${projId}-${idx}">
-    <input type="text" placeholder="按鈕文字" value="${l.text||''}" id="link-text-${projId}-${idx}" style="flex:2">
-    <input type="url" placeholder="URL" value="${l.url||''}" id="link-url-${projId}-${idx}" style="flex:3">
-    <select id="link-style-${projId}-${idx}" style="flex:1">
+function renderLinkRow(projId, lid, l) {
+  return `<div class="flex gap-2 mb-2 items-center" id="link-row-${lid}">
+    <input type="text" placeholder="按鈕文字" value="${l.text||''}" id="link-text-${lid}" style="flex:2">
+    <input type="url" placeholder="URL" value="${l.url||''}" id="link-url-${lid}" style="flex:3">
+    <select id="link-style-${lid}" style="flex:1">
       ${['light','primary','outline'].map(s=>`<option value="${s}" ${s===l.style?'selected':''}>${s}</option>`).join('')}
     </select>
     <label style="display:flex;align-items:center;gap:4px;font-weight:400;white-space:nowrap;font-size:12px;">
-      <input type="checkbox" id="link-full-${projId}-${idx}" ${l.fullWidth?'checked':''}> 全寬
+      <input type="checkbox" id="link-full-${lid}" ${l.fullWidth?'checked':''}> 全寬
     </label>
-    <button class="btn btn-danger text-xs" onclick="removeLinkRow('${projId}',${idx})">✕</button>
+    <button class="btn btn-danger text-xs" onclick="removeLinkRow('${projId}','${lid}')">✕</button>
   </div>`;
 }
 
 function addLink(projId) {
   const p = cvData.projects.find(x => x.id === projId);
   if (!p) return;
-  const idx = p.links.length;
-  p.links.push({ text:'', url:'', style:'light', fullWidth:false });
-  document.getElementById('pj-links-container').innerHTML += renderLinkRow(projId, idx, p.links[idx]);
+  const lid = uid();
+  const newLink = { lid, text:'', url:'', style:'light', fullWidth:false };
+  p.links.push(newLink);
+  document.getElementById('pj-links-container').insertAdjacentHTML('beforeend', renderLinkRow(projId, lid, newLink));
 }
 
-function removeLinkRow(projId, idx) {
-  const row = document.getElementById(`link-row-${projId}-${idx}`);
+function removeLinkRow(projId, lid) {
+  const row = document.getElementById(`link-row-${lid}`);
   if (row) row.remove();
   const p = cvData.projects.find(x => x.id === projId);
-  if (p) p.links.splice(idx, 1);
+  if (p) p.links = p.links.filter(l => l.lid !== lid);
 }
 
 function uploadPjImage(input) {
@@ -827,14 +830,18 @@ function saveProjectModal(id) {
   p.gradient = document.getElementById('pj-gradient').value;
   p.icon = document.getElementById('pj-icon').value;
   p.description = document.getElementById('pj-desc').value;
-  // Collect links
-  p.links = p.links.map((l, i) => {
-    const textEl = document.getElementById(`link-text-${id}-${i}`);
-    const urlEl = document.getElementById(`link-url-${id}-${i}`);
-    const styleEl = document.getElementById(`link-style-${id}-${i}`);
-    const fullEl = document.getElementById(`link-full-${id}-${i}`);
+  // Collect links (use lid as stable key, not array index)
+  p.links = p.links.map(l => {
+    const lid = l.lid;
+    const textEl = document.getElementById(`link-text-${lid}`);
     if (!textEl) return null;
-    return { text: textEl.value, url: urlEl.value, style: styleEl.value, fullWidth: fullEl.checked };
+    return {
+      lid,
+      text: textEl.value,
+      url: document.getElementById(`link-url-${lid}`).value,
+      style: document.getElementById(`link-style-${lid}`).value,
+      fullWidth: document.getElementById(`link-full-${lid}`).checked
+    };
   }).filter(Boolean);
   closeModal();
   renderProjectsList();
