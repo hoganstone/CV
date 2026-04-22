@@ -1,0 +1,1059 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CV 後台管理系統</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<style>
+  body { font-family: system-ui, sans-serif; }
+  .sidebar-link { @apply flex items-center gap-3 px-4 py-2.5 rounded-lg text-slate-300 hover:bg-slate-700 hover:text-white transition-colors cursor-pointer; }
+  .sidebar-link.active { @apply bg-blue-600 text-white; }
+  .section-panel { display: none; }
+  .section-panel.active { display: block; }
+  .tag-pill { display:inline-flex; align-items:center; gap:4px; background:#eff6ff; color:#1d4ed8; border-radius:9999px; padding:2px 10px; font-size:13px; margin:2px; }
+  .tag-pill button { background:none; border:none; cursor:pointer; color:#93c5fd; font-size:11px; padding:0 2px; }
+  .tag-pill button:hover { color:#ef4444; }
+  input[type=text], input[type=url], input[type=password], textarea, select {
+    width:100%; border:1px solid #cbd5e1; border-radius:6px; padding:8px 12px;
+    font-size:14px; outline:none; transition:border-color 0.2s;
+    background:white;
+  }
+  input:focus, textarea:focus, select:focus { border-color:#3b82f6; box-shadow:0 0 0 2px #bfdbfe; }
+  label { display:block; font-size:13px; font-weight:600; color:#374151; margin-bottom:4px; }
+  .field-group { margin-bottom:16px; }
+  .btn { padding:8px 18px; border-radius:6px; font-size:14px; font-weight:600; cursor:pointer; border:none; transition:all 0.2s; }
+  .btn-primary { background:#3b82f6; color:white; }
+  .btn-primary:hover { background:#2563eb; }
+  .btn-danger { background:#ef4444; color:white; }
+  .btn-danger:hover { background:#dc2626; }
+  .btn-ghost { background:#f1f5f9; color:#374151; border:1px solid #e2e8f0; }
+  .btn-ghost:hover { background:#e2e8f0; }
+  .btn-success { background:#10b981; color:white; }
+  .btn-success:hover { background:#059669; }
+  .card { background:white; border:1px solid #e2e8f0; border-radius:10px; padding:16px; margin-bottom:12px; }
+  .modal-overlay { position:fixed; inset:0; background:rgba(0,0,0,0.5); z-index:1000; display:flex; align-items:center; justify-content:center; padding:16px; }
+  .modal-box { background:white; border-radius:12px; width:100%; max-width:640px; max-height:90vh; overflow-y:auto; padding:24px; }
+  #toast { position:fixed; bottom:24px; right:24px; background:#10b981; color:white; padding:12px 20px; border-radius:8px; font-weight:600; z-index:2000; transform:translateY(100px); opacity:0; transition:all 0.3s; }
+  #toast.show { transform:translateY(0); opacity:1; }
+  #toast.error { background:#ef4444; }
+</style>
+</head>
+<body class="bg-slate-100 min-h-screen">
+
+<!-- Login Screen -->
+<div id="login-screen" class="min-h-screen flex items-center justify-center">
+  <div class="bg-white rounded-2xl shadow-xl p-10 w-full max-w-sm">
+    <div class="text-center mb-8">
+      <div class="w-16 h-16 bg-blue-600 rounded-2xl flex items-center justify-center mx-auto mb-4">
+        <i class="fas fa-shield-alt text-white text-2xl"></i>
+      </div>
+      <h1 class="text-2xl font-bold text-slate-800">CV 後台管理</h1>
+      <p class="text-slate-500 text-sm mt-1">請輸入管理員密碼</p>
+    </div>
+    <div class="field-group">
+      <label>密碼</label>
+      <input type="password" id="login-pw" placeholder="輸入密碼" onkeydown="if(event.key==='Enter')doLogin()">
+    </div>
+    <button class="btn btn-primary w-full mt-2" onclick="doLogin()">登入</button>
+    <p id="login-err" class="text-red-500 text-sm text-center mt-3 hidden">密碼錯誤，請再試一次</p>
+    <p class="text-slate-400 text-xs text-center mt-6">預設密碼：hogan2026</p>
+  </div>
+</div>
+
+<!-- Admin App -->
+<div id="admin-app" class="hidden min-h-screen flex flex-col">
+
+  <!-- Header -->
+  <header class="bg-slate-900 text-white px-6 py-3 flex items-center justify-between shadow-lg flex-shrink-0">
+    <div class="flex items-center gap-3">
+      <div class="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center">
+        <i class="fas fa-cog text-sm"></i>
+      </div>
+      <span class="font-bold text-lg">CV 後台管理系統</span>
+    </div>
+    <div class="flex items-center gap-3">
+      <a href="index.html" target="_blank" class="btn btn-ghost text-sm flex items-center gap-2">
+        <i class="fas fa-eye"></i> 預覽前台
+      </a>
+      <button onclick="doLogout()" class="btn btn-ghost text-sm flex items-center gap-2">
+        <i class="fas fa-sign-out-alt"></i> 登出
+      </button>
+    </div>
+  </header>
+
+  <div class="flex flex-1 overflow-hidden">
+    <!-- Sidebar -->
+    <aside class="w-56 bg-slate-800 flex-shrink-0 overflow-y-auto">
+      <nav class="p-3 space-y-1 mt-2">
+        <div onclick="showSection('hero')" class="sidebar-link active" data-section="hero">
+          <i class="fas fa-home w-4"></i> 首頁設定
+        </div>
+        <div onclick="showSection('about')" class="sidebar-link" data-section="about">
+          <i class="fas fa-user w-4"></i> 關於我
+        </div>
+        <div onclick="showSection('skills')" class="sidebar-link" data-section="skills">
+          <i class="fas fa-tools w-4"></i> 專業技能
+        </div>
+        <div onclick="showSection('projects')" class="sidebar-link" data-section="projects">
+          <i class="fas fa-folder-open w-4"></i> 專案實績
+        </div>
+        <div onclick="showSection('experience')" class="sidebar-link" data-section="experience">
+          <i class="fas fa-briefcase w-4"></i> 工作經歷
+        </div>
+        <div onclick="showSection('education')" class="sidebar-link" data-section="education">
+          <i class="fas fa-graduation-cap w-4"></i> 學歷認證
+        </div>
+        <div onclick="showSection('other')" class="sidebar-link" data-section="other">
+          <i class="fas fa-sliders-h w-4"></i> 其他設定
+        </div>
+        <div class="border-t border-slate-700 my-3"></div>
+        <div onclick="showSection('password')" class="sidebar-link" data-section="password">
+          <i class="fas fa-key w-4"></i> 修改密碼
+        </div>
+      </nav>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="flex-1 overflow-y-auto p-6">
+
+      <!-- ── Hero Section ── -->
+      <div id="panel-hero" class="section-panel active">
+        <div class="flex items-center justify-between mb-6">
+          <h2 class="text-xl font-bold text-slate-800">首頁設定</h2>
+          <button class="btn btn-success" onclick="saveSection('hero')"><i class="fas fa-save mr-2"></i>儲存</button>
+        </div>
+        <div class="bg-white rounded-xl p-6 shadow-sm border border-slate-100 mb-4">
+          <h3 class="font-bold text-slate-700 mb-4 pb-2 border-b">基本資訊</h3>
+          <div class="grid grid-cols-2 gap-4">
+            <div class="field-group"><label>中文姓名</label><input type="text" id="hero-nameZh"></div>
+            <div class="field-group"><label>英文姓名</label><input type="text" id="hero-nameEn"></div>
+          </div>
+          <div class="field-group"><label>照片網址 / Base64</label><input type="text" id="hero-photo" placeholder="hogan-2014.jpg 或 https://..."></div>
+          <div class="field-group">
+            <label>上傳照片</label>
+            <input type="file" accept="image/*" onchange="uploadHeroPhoto(this)" class="block text-sm text-slate-600 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100" style="border:none; padding:0;">
+            <div id="hero-photo-preview" class="mt-2"></div>
+          </div>
+          <div class="grid grid-cols-2 gap-4">
+            <div class="field-group"><label>名片標籤文字</label><input type="text" id="hero-badge" placeholder="Vue 3 / Nuxt"></div>
+            <div class="field-group"><label>名片圖示 CSS class</label><input type="text" id="hero-badgeIcon" placeholder="fab fa-vuejs text-green-500"></div>
+          </div>
+        </div>
+        <div class="bg-white rounded-xl p-6 shadow-sm border border-slate-100 mb-4">
+          <h3 class="font-bold text-slate-700 mb-4 pb-2 border-b">中文文字內容</h3>
+          <div class="field-group"><label>副標題</label><input type="text" id="hero-subtitle"></div>
+          <div class="field-group"><label>簡介描述</label><textarea id="hero-desc" rows="3"></textarea></div>
+        </div>
+        <div class="bg-white rounded-xl p-6 shadow-sm border border-slate-100">
+          <h3 class="font-bold text-slate-700 mb-4 pb-2 border-b">聯絡資訊</h3>
+          <div class="grid grid-cols-2 gap-4">
+            <div class="field-group"><label>地點（中文）</label><input type="text" id="contact-location"></div>
+            <div class="field-group"><label>電話</label><input type="text" id="contact-phone"></div>
+          </div>
+          <div class="field-group"><label>Email</label><input type="text" id="contact-email-val"></div>
+        </div>
+      </div>
+
+      <!-- ── About Section ── -->
+      <div id="panel-about" class="section-panel">
+        <div class="flex items-center justify-between mb-6">
+          <h2 class="text-xl font-bold text-slate-800">關於我</h2>
+          <button class="btn btn-success" onclick="saveSection('about')"><i class="fas fa-save mr-2"></i>儲存</button>
+        </div>
+        <div class="bg-white rounded-xl p-6 shadow-sm border border-slate-100">
+          <div class="field-group"><label>第一段落</label><textarea id="about-p1" rows="4"></textarea></div>
+          <div class="field-group"><label>第二段落</label><textarea id="about-p2" rows="4"></textarea></div>
+          <div class="field-group"><label>第三段落</label><textarea id="about-p3" rows="4"></textarea></div>
+        </div>
+      </div>
+
+      <!-- ── Skills Section ── -->
+      <div id="panel-skills" class="section-panel">
+        <div class="flex items-center justify-between mb-6">
+          <h2 class="text-xl font-bold text-slate-800">專業技能</h2>
+          <div class="flex gap-2">
+            <button class="btn btn-ghost" onclick="addSkill()"><i class="fas fa-plus mr-2"></i>新增技能卡</button>
+            <button class="btn btn-success" onclick="saveSection('skills')"><i class="fas fa-save mr-2"></i>儲存</button>
+          </div>
+        </div>
+        <div id="skills-list"></div>
+      </div>
+
+      <!-- ── Projects Section ── -->
+      <div id="panel-projects" class="section-panel">
+        <div class="flex items-center justify-between mb-6">
+          <h2 class="text-xl font-bold text-slate-800">專案實績</h2>
+          <div class="flex gap-2">
+            <button class="btn btn-ghost" onclick="addProject()"><i class="fas fa-plus mr-2"></i>新增專案</button>
+            <button class="btn btn-success" onclick="saveSection('projects')"><i class="fas fa-save mr-2"></i>儲存</button>
+          </div>
+        </div>
+        <div id="projects-list"></div>
+      </div>
+
+      <!-- ── Experience Section ── -->
+      <div id="panel-experience" class="section-panel">
+        <div class="flex items-center justify-between mb-6">
+          <h2 class="text-xl font-bold text-slate-800">工作經歷</h2>
+          <div class="flex gap-2">
+            <button class="btn btn-ghost" onclick="addExperience()"><i class="fas fa-plus mr-2"></i>新增經歷</button>
+            <button class="btn btn-success" onclick="saveSection('experience')"><i class="fas fa-save mr-2"></i>儲存</button>
+          </div>
+        </div>
+        <div id="experience-list"></div>
+      </div>
+
+      <!-- ── Education Section ── -->
+      <div id="panel-education" class="section-panel">
+        <div class="flex items-center justify-between mb-6">
+          <h2 class="text-xl font-bold text-slate-800">學歷認證</h2>
+          <button class="btn btn-success" onclick="saveSection('education')"><i class="fas fa-save mr-2"></i>儲存</button>
+        </div>
+        <div class="bg-white rounded-xl p-6 shadow-sm border border-slate-100 mb-4">
+          <div class="flex items-center justify-between mb-4">
+            <h3 class="font-bold text-slate-700">學歷</h3>
+            <button class="btn btn-ghost text-sm" onclick="addEdu()"><i class="fas fa-plus mr-1"></i>新增</button>
+          </div>
+          <div id="edu-admin-list" class="space-y-3"></div>
+        </div>
+        <div class="bg-white rounded-xl p-6 shadow-sm border border-slate-100 mb-4">
+          <div class="flex items-center justify-between mb-4">
+            <h3 class="font-bold text-slate-700">專業認證</h3>
+            <button class="btn btn-ghost text-sm" onclick="addCert()"><i class="fas fa-plus mr-1"></i>新增</button>
+          </div>
+          <div id="cert-admin-list" class="space-y-2"></div>
+        </div>
+        <div class="bg-white rounded-xl p-6 shadow-sm border border-slate-100">
+          <h3 class="font-bold text-slate-700 mb-4">推薦人</h3>
+          <div class="grid grid-cols-2 gap-4">
+            <div class="field-group"><label>姓名</label><input type="text" id="referee-name"></div>
+            <div class="field-group"><label>職稱</label><input type="text" id="referee-role"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ── Other Section ── -->
+      <div id="panel-other" class="section-panel">
+        <div class="flex items-center justify-between mb-6">
+          <h2 class="text-xl font-bold text-slate-800">其他設定</h2>
+          <button class="btn btn-success" onclick="saveSection('other')"><i class="fas fa-save mr-2"></i>儲存</button>
+        </div>
+        <div class="bg-white rounded-xl p-6 shadow-sm border border-slate-100">
+          <h3 class="font-bold text-slate-700 mb-4 pb-2 border-b">頁尾資訊</h3>
+          <div class="grid grid-cols-2 gap-4">
+            <div class="field-group"><label>名稱</label><input type="text" id="footer-name-val"></div>
+            <div class="field-group"><label>副標題（中文）</label><input type="text" id="footer-subtitle-val"></div>
+          </div>
+          <div class="field-group"><label>版權聲明</label><input type="text" id="footer-copyright-val"></div>
+          <div class="field-group"><label>Email</label><input type="text" id="footer-email-val"></div>
+          <div class="field-group"><label>GitHub URL</label><input type="url" id="footer-github-val"></div>
+          <div class="field-group"><label>LinkedIn URL</label><input type="url" id="footer-linkedin-val"></div>
+        </div>
+        <div class="bg-white rounded-xl p-6 shadow-sm border border-slate-100 mt-4">
+          <h3 class="font-bold text-slate-700 mb-4 pb-2 border-b">危險操作</h3>
+          <button class="btn btn-danger" onclick="resetAllData()"><i class="fas fa-trash mr-2"></i>重置所有資料為預設值</button>
+        </div>
+      </div>
+
+      <!-- ── Password Section ── -->
+      <div id="panel-password" class="section-panel">
+        <div class="mb-6"><h2 class="text-xl font-bold text-slate-800">修改密碼</h2></div>
+        <div class="bg-white rounded-xl p-6 shadow-sm border border-slate-100 max-w-sm">
+          <div class="field-group"><label>目前密碼</label><input type="password" id="pw-current"></div>
+          <div class="field-group"><label>新密碼</label><input type="password" id="pw-new"></div>
+          <div class="field-group"><label>確認新密碼</label><input type="password" id="pw-confirm"></div>
+          <button class="btn btn-primary w-full mt-2" onclick="changePassword()">變更密碼</button>
+        </div>
+      </div>
+
+    </main>
+  </div>
+</div>
+
+<!-- Toast -->
+<div id="toast"></div>
+
+<!-- Modal -->
+<div id="modal" class="modal-overlay hidden">
+  <div class="modal-box">
+    <div id="modal-content"></div>
+  </div>
+</div>
+
+<script>
+// ─── Auth ──────────────────────────────────────────────────────────────────
+const DEFAULT_PW = 'hogan2026';
+function getPassword() { return localStorage.getItem('cv_admin_pw') || DEFAULT_PW; }
+
+function doLogin() {
+  const pw = document.getElementById('login-pw').value;
+  if (pw === getPassword()) {
+    localStorage.setItem('cv_admin_session', '1');
+    document.getElementById('login-screen').classList.add('hidden');
+    document.getElementById('admin-app').classList.remove('hidden');
+    initAdmin();
+  } else {
+    document.getElementById('login-err').classList.remove('hidden');
+  }
+}
+
+function doLogout() {
+  localStorage.removeItem('cv_admin_session');
+  location.reload();
+}
+
+function changePassword() {
+  const cur = document.getElementById('pw-current').value;
+  const nw = document.getElementById('pw-new').value;
+  const con = document.getElementById('pw-confirm').value;
+  if (cur !== getPassword()) return showToast('目前密碼錯誤', true);
+  if (nw.length < 6) return showToast('新密碼至少需要 6 個字元', true);
+  if (nw !== con) return showToast('確認密碼不一致', true);
+  localStorage.setItem('cv_admin_pw', nw);
+  document.getElementById('pw-current').value = '';
+  document.getElementById('pw-new').value = '';
+  document.getElementById('pw-confirm').value = '';
+  showToast('密碼已變更');
+}
+
+// ─── Data ──────────────────────────────────────────────────────────────────
+const defaultData = {
+  hero: { nameZh:'石恆文', nameEn:'Hogan Shih', photo:'hogan-2014.jpg', badge:'Vue 3 / Nuxt', badgeIcon:'fab fa-vuejs text-green-500' },
+  contact: { phone:'0921-898-920', email:'Hogan.shih@gmail.com' },
+  i18nZh: {
+    hero_subtitle:'AI 網頁開發工程師 | IT 系統管理 | 資料分析',
+    hero_desc:'擁有 20 年跨產業工程與資訊管理經驗，擅長將業務需求精準轉化為可維護的系統架構，兼具技術開發與跨部門溝通的軟硬實力。',
+    contact_location:'台北市萬華區',
+    about_p1:'擁有 20 年跨產業工程與資訊管理經驗，近年深耕AI網頁開發，具備 Vue 3 / Nuxt、PHP+Laravel、Python (Django/Flask) 完整前後端開發能力。',
+    about_p2:'曾獨立設計並上線鋼鐵產業統計付費平台，整合 SQL Server 資料庫與公會原產地證明系統，年收入貢獻超過 200 萬。我擅長將複雜的業務邏輯與流程，轉化為直覺、高效且可維護的數位系統架構。',
+    about_p3:'在 AI 工具快速發展的環境下，我積極導入 Spec-Driven Development (SDD) 開發模式，透過 Claude、Gemini 等 AI 助手輔助，結合 UI 快速原型設計，大幅提升前後台系統建構的效率。此外，具備豐富的專案管理與 ISO 9001 品質稽核經驗，能有效進行跨部門溝通與資源協調。',
+    footer_subtitle:'AI 網頁開發工程師',
+    footer_copyright:'© 2026 石恆文 Hogan Shih. All Rights Reserved.'
+  },
+  skills: [
+    { id:'s1', title:'前端開發', icon:'fas fa-desktop', colorTheme:'blue', span:1, tags:['Vue 3 / Nuxt 3','JavaScript','Tailwind CSS','Bootstrap','Figma / Shadcn','React'] },
+    { id:'s2', title:'後端開發', icon:'fas fa-server', colorTheme:'green', span:1, tags:['PHP + Laravel 12','Node.js','Python (Django/Flask)','Express.js','RESTful API'] },
+    { id:'s3', title:'資料庫與系統架構', icon:'fas fa-database', colorTheme:'purple', span:1, tags:['SQL Server','MySQL','Firebase','Linux','Git','Hadoop (HDFS/YARN)'] },
+    { id:'s4', title:'AI 輔助開發與工具', icon:'fas fa-robot', colorTheme:'yellow', span:1, tags:['Claude Pro','Gemini Pro','Spec-Driven Dev','Skitich / Pencil'] },
+    { id:'s5', title:'專案管理與品保', icon:'fas fa-tasks', colorTheme:'red', span:2, tags:['IPMA D 級專案管理師','ISO 9001:2015 主導稽核員','SAP ERP (PP/MM/SD)','PDM','QFD / TRIZ / SPC'] }
+  ],
+  projects: [
+    { id:'p1', title:'資源再生協會<br>網站與管理系統', gradient:'from-blue-500 to-indigo-600', icon:'fas fa-recycle', techTags:[{text:'Nuxt.js',color:'blue'},{text:'Node.js',color:'green'},{text:'RESTful API',color:'purple'}], description:'為 RRA 資源再生協會建置之官方網站與專屬後台管理系統，提供完善的內容發布與資料管理功能。', links:[{text:'前台 Demo',url:'https://rra-website.vercel.app/',style:'light'},{text:'後台 Demo',url:'https://rra-website.vercel.app/admin',style:'primary'}] },
+    { id:'p2', title:'鋼鐵公會統計網<br>DEMO 平台', gradient:'from-slate-700 to-slate-900', icon:'fas fa-industry', techTags:[{text:'Nuxt 3',color:'blue'},{text:'Laravel 12',color:'red'}], description:'建構鋼鐵產業統計資料庫之展示與查詢平台，前台提供資料視覺化與搜尋，後台負責資料更新與會員權限管理。', links:[{text:'前台 Demo',url:'https://tsiia-web.vercel.app/',style:'light'},{text:'後台 Demo',url:'https://tsiia-web.vercel.app/login',style:'primary'}] },
+    { id:'p3', title:'鋼鐵聯合會<br>公會系統 & 會籍統計', gradient:'from-teal-500 to-emerald-600', icon:'fas fa-users-cog', techTags:[{text:'Vue 3',color:'green'},{text:'Express/Node',color:'yellow'}], description:'開發鋼鐵公會聯合會的對外網站與會籍統計管理系統，數位化整合傳統會務管理流程。', links:[{text:'聯合會前台',url:'https://steel-guild-vue.vercel.app/',style:'light'},{text:'聯合會後台',url:'https://steel-guild-vue.vercel.app/admin',style:'outline'},{text:'會籍統計系統 Demo',url:'https://steelmember.vercel.app/admin/login',style:'primary',fullWidth:true}] },
+    { id:'p4', title:'海石日式料理<br>線上訂餐網', gradient:'from-orange-400 to-red-500', icon:'fas fa-utensils', techTags:[{text:'Vue.js',color:'green'},{text:'六角 API',color:'slate'}], description:'包含完整購物車流程的電子商務 SPA，具備前台商品展示選購與後台商品庫存上架管理。', links:[{text:'購物車前台',url:'https://hoganstone.github.io/japanese-restaurant/#/',style:'light'},{text:'管理後台',url:'https://hoganstone.github.io/japanese-restaurant/#/admin/products',style:'primary'}] }
+  ],
+  experience: [
+    { id:'e1', period:'1999 - 2018', yearsNote:'19年資歷', title:'資訊組 組長', company:'台灣鋼鐵工業同業公會', contentType:'list', side:'right', dotColor:'bg-secondary', content:['<span class="font-medium text-slate-700">系統重構與開發：</span>使用 .NET、PHP、JavaScript 等技術取代原 IBM AS400，獨立建構 Web 化資訊平台。','<span class="font-medium text-slate-700">創造營收：</span>規劃運作台灣原產地證明簽發系統，年收入貢獻約 200 萬元。開發付費產業統計查詢網站。','<span class="font-medium text-slate-700">IT 基礎架構管理：</span>統籌維護 Firewall、Web/Mail Server、網域及軟硬體設備。','<span class="font-medium text-slate-700">政府專案主導：</span>完成經濟部商業司 PKI 標案（約 150 萬元）。'] },
+    { id:'e2', period:'1997 - 1997', yearsNote:'', title:'品保經理', company:'美商捷普科技 Jabil', contentType:'text', side:'left', dotColor:'bg-slate-300', content:'負責 LCD TV 產品品質驗證（DQA）與可靠度驗證（RA），涵蓋安規及 EMI 測試。維護 ISO 9000/14000 品質系統，主持跨國英文品質會議與供應商稽核管理。' },
+    { id:'e3', period:'1996 - 1997', yearsNote:'', title:'視訊系統處 / 產品發展部 經理', company:'瑞相科技（力晶&瑞薩合資）', contentType:'text', side:'right', dotColor:'bg-slate-300', content:'主導 ATSC 數位電視 SOC 晶片及軟硬體開發設計管理。負責 IC 產品 Roadmap 規劃、處理客戶 RFI/RFQ，並協助客戶設計開發平台導入量產。' },
+    { id:'e4', period:'1986 - 1996', yearsNote:'早期重要經歷', title:'研發 / 專案 / 產銷主管', company:'', contentType:'companies', side:'left', dotColor:'bg-slate-300', content:['<span class="font-semibold">智邦科技：</span>專案經理 (WiFi/Bluetooth/WiMAX 開發)','<span class="font-semibold">廣輝電子(友達)：</span>專案副理 (六代廠 LCD-TV 新產品開發)','<span class="font-semibold">瀚宇彩晶：</span>試產線主管 / 客戶品質服務副理','<span class="font-semibold">精英電腦 / 力太電子：</span>製程工程師 / 生管課長'] }
+  ],
+  education: [
+    { id:'ed1', school:'國立台北科技大學', degree:'工業工程與管理研究所 (碩士)', year:'2009.06' },
+    { id:'ed2', school:'義守大學', degree:'工業工程管理系 (學士)', year:'1997.06' }
+  ],
+  certifications: [
+    { id:'c1', text:'Microsoft Python 微軟認證' },
+    { id:'c2', text:'Google Gemini AI 專業教育認證' },
+    { id:'c3', text:'IPMA D 級專案管理師' },
+    { id:'c4', text:'SGS / AFNOR ISO 9001:2015 主導稽核員' }
+  ],
+  referee: { name:'黃孝信', role:'台灣資源再生協會 前理事長' },
+  footer: { name:'Hogan.S', email:'Hogan.shih@gmail.com', githubUrl:'#', linkedinUrl:'#' }
+};
+
+let cvData = {};
+
+function loadCvData() {
+  try {
+    const saved = localStorage.getItem('hogan_cv_data');
+    if (saved) {
+      cvData = JSON.parse(saved);
+      // Ensure i18nZh exists
+      if (!cvData.i18nZh) cvData.i18nZh = JSON.parse(JSON.stringify(defaultData.i18nZh));
+    } else {
+      cvData = JSON.parse(JSON.stringify(defaultData));
+    }
+  } catch(e) {
+    cvData = JSON.parse(JSON.stringify(defaultData));
+  }
+}
+
+function saveCvData() {
+  localStorage.setItem('hogan_cv_data', JSON.stringify(cvData));
+}
+
+function uid() { return '_' + Math.random().toString(36).substr(2,9); }
+
+// ─── Toast ─────────────────────────────────────────────────────────────────
+function showToast(msg, isError) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.className = isError ? 'error show' : 'show';
+  setTimeout(() => { t.className = isError ? 'error' : ''; }, 3000);
+}
+
+// ─── Navigation ────────────────────────────────────────────────────────────
+function showSection(name) {
+  document.querySelectorAll('.section-panel').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.sidebar-link').forEach(l => l.classList.remove('active'));
+  document.getElementById('panel-' + name).classList.add('active');
+  document.querySelector(`[data-section="${name}"]`).classList.add('active');
+}
+
+// ─── Hero ──────────────────────────────────────────────────────────────────
+function loadHeroPanel() {
+  const h = cvData.hero || {};
+  const i = cvData.i18nZh || {};
+  const c = cvData.contact || {};
+  document.getElementById('hero-nameZh').value = h.nameZh || '';
+  document.getElementById('hero-nameEn').value = h.nameEn || '';
+  document.getElementById('hero-photo').value = h.photo || '';
+  document.getElementById('hero-badge').value = h.badge || '';
+  document.getElementById('hero-badgeIcon').value = h.badgeIcon || '';
+  document.getElementById('hero-subtitle').value = i.hero_subtitle || '';
+  document.getElementById('hero-desc').value = i.hero_desc || '';
+  document.getElementById('contact-location').value = i.contact_location || '';
+  document.getElementById('contact-phone').value = c.phone || '';
+  document.getElementById('contact-email-val').value = c.email || '';
+  if (h.photo) updatePhotoPreview(h.photo);
+}
+
+function uploadHeroPhoto(input) {
+  const file = input.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = e => {
+    document.getElementById('hero-photo').value = e.target.result;
+    updatePhotoPreview(e.target.result);
+  };
+  reader.readAsDataURL(file);
+}
+
+function updatePhotoPreview(src) {
+  document.getElementById('hero-photo-preview').innerHTML = src
+    ? `<img src="${src}" class="w-20 h-20 rounded-full object-cover border-2 border-blue-300" alt="preview">`
+    : '';
+}
+
+function saveSection(section) {
+  if (section === 'hero') {
+    cvData.hero = {
+      nameZh: document.getElementById('hero-nameZh').value,
+      nameEn: document.getElementById('hero-nameEn').value,
+      photo:  document.getElementById('hero-photo').value,
+      badge:  document.getElementById('hero-badge').value,
+      badgeIcon: document.getElementById('hero-badgeIcon').value,
+    };
+    if (!cvData.i18nZh) cvData.i18nZh = {};
+    cvData.i18nZh.hero_subtitle = document.getElementById('hero-subtitle').value;
+    cvData.i18nZh.hero_desc = document.getElementById('hero-desc').value;
+    cvData.i18nZh.contact_location = document.getElementById('contact-location').value;
+    cvData.contact = {
+      phone: document.getElementById('contact-phone').value,
+      email: document.getElementById('contact-email-val').value
+    };
+  } else if (section === 'about') {
+    if (!cvData.i18nZh) cvData.i18nZh = {};
+    cvData.i18nZh.about_p1 = document.getElementById('about-p1').value;
+    cvData.i18nZh.about_p2 = document.getElementById('about-p2').value;
+    cvData.i18nZh.about_p3 = document.getElementById('about-p3').value;
+  } else if (section === 'skills') {
+    cvData.skills = collectSkills();
+  } else if (section === 'projects') {
+    cvData.projects = collectProjects();
+  } else if (section === 'experience') {
+    cvData.experience = collectExperience();
+  } else if (section === 'education') {
+    cvData.education = collectEducation();
+    cvData.certifications = collectCertifications();
+    cvData.referee = {
+      name: document.getElementById('referee-name').value,
+      role: document.getElementById('referee-role').value
+    };
+  } else if (section === 'other') {
+    if (!cvData.i18nZh) cvData.i18nZh = {};
+    cvData.footer = {
+      name: document.getElementById('footer-name-val').value,
+      email: document.getElementById('footer-email-val').value,
+      githubUrl: document.getElementById('footer-github-val').value,
+      linkedinUrl: document.getElementById('footer-linkedin-val').value,
+    };
+    cvData.i18nZh.footer_subtitle = document.getElementById('footer-subtitle-val').value;
+    cvData.i18nZh.footer_copyright = document.getElementById('footer-copyright-val').value;
+  }
+  saveCvData();
+  showToast('✓ 已儲存');
+}
+
+// ─── About ─────────────────────────────────────────────────────────────────
+function loadAboutPanel() {
+  const i = cvData.i18nZh || {};
+  document.getElementById('about-p1').value = i.about_p1 || '';
+  document.getElementById('about-p2').value = i.about_p2 || '';
+  document.getElementById('about-p3').value = i.about_p3 || '';
+}
+
+// ─── Skills ────────────────────────────────────────────────────────────────
+const colorOptions = ['blue','green','purple','yellow','red','teal'];
+const gradientOptions = ['from-blue-500 to-indigo-600','from-slate-700 to-slate-900','from-teal-500 to-emerald-600','from-orange-400 to-red-500','from-green-500 to-emerald-600','from-violet-500 to-purple-600','from-cyan-500 to-blue-500','from-pink-500 to-rose-500'];
+const iconOptions = ['fas fa-desktop','fas fa-server','fas fa-database','fas fa-robot','fas fa-tasks','fas fa-code','fas fa-cloud','fas fa-shield-alt','fas fa-chart-bar','fas fa-mobile-alt','fas fa-recycle','fas fa-industry','fas fa-users-cog','fas fa-utensils','fas fa-graduation-cap'];
+
+function loadSkillsPanel() {
+  renderSkillsList();
+}
+
+function renderSkillsList() {
+  const container = document.getElementById('skills-list');
+  if (!cvData.skills || !cvData.skills.length) {
+    container.innerHTML = '<p class="text-slate-400 text-center py-8">尚無技能卡，點擊「新增技能卡」開始</p>';
+    return;
+  }
+  container.innerHTML = cvData.skills.map((s,i) => `
+    <div class="card" id="skill-card-${s.id}">
+      <div class="flex items-start justify-between mb-4">
+        <div class="flex items-center gap-3">
+          <div class="w-10 h-10 bg-${s.colorTheme}-100 text-${s.colorTheme}-600 rounded-lg flex items-center justify-center">
+            <i class="${s.icon}"></i>
+          </div>
+          <div>
+            <div class="font-bold text-slate-800">${s.title}</div>
+            <div class="text-xs text-slate-400">顏色: ${s.colorTheme} | 佔欄: ${s.span} | 標籤: ${s.tags.length}個</div>
+          </div>
+        </div>
+        <div class="flex gap-2">
+          <button class="btn btn-ghost text-sm" onclick="moveSkill('${s.id}',-1)" ${i===0?'disabled':''}>↑</button>
+          <button class="btn btn-ghost text-sm" onclick="moveSkill('${s.id}',1)" ${i===cvData.skills.length-1?'disabled':''}>↓</button>
+          <button class="btn btn-ghost text-sm" onclick="openSkillModal('${s.id}')">編輯</button>
+          <button class="btn btn-danger text-sm" onclick="deleteSkill('${s.id}')">刪除</button>
+        </div>
+      </div>
+      <div class="flex flex-wrap gap-1">
+        ${s.tags.map(t=>`<span class="tag-pill">${t}</span>`).join('')}
+      </div>
+    </div>`).join('');
+}
+
+function addSkill() {
+  const newSkill = { id: uid(), title:'新技能', icon:'fas fa-code', colorTheme:'blue', span:1, tags:[] };
+  cvData.skills.push(newSkill);
+  renderSkillsList();
+  openSkillModal(newSkill.id);
+}
+
+function deleteSkill(id) {
+  if (!confirm('確定刪除此技能卡？')) return;
+  cvData.skills = cvData.skills.filter(s => s.id !== id);
+  renderSkillsList();
+}
+
+function moveSkill(id, dir) {
+  const idx = cvData.skills.findIndex(s => s.id === id);
+  if (idx < 0) return;
+  const newIdx = idx + dir;
+  if (newIdx < 0 || newIdx >= cvData.skills.length) return;
+  [cvData.skills[idx], cvData.skills[newIdx]] = [cvData.skills[newIdx], cvData.skills[idx]];
+  renderSkillsList();
+}
+
+function openSkillModal(id) {
+  const s = cvData.skills.find(x => x.id === id);
+  if (!s) return;
+  document.getElementById('modal-content').innerHTML = `
+    <div class="flex justify-between items-center mb-4">
+      <h3 class="text-lg font-bold text-slate-800">編輯技能卡</h3>
+      <button onclick="closeModal()" class="text-slate-400 hover:text-slate-600"><i class="fas fa-times text-xl"></i></button>
+    </div>
+    <div class="field-group"><label>標題</label><input type="text" id="sk-title" value="${s.title}"></div>
+    <div class="grid grid-cols-2 gap-4">
+      <div class="field-group"><label>圖示 class</label>
+        <input type="text" id="sk-icon" value="${s.icon}" list="icon-list">
+        <datalist id="icon-list">${iconOptions.map(o=>`<option value="${o}">`).join('')}</datalist>
+      </div>
+      <div class="field-group"><label>顏色主題</label>
+        <select id="sk-color">${colorOptions.map(c=>`<option value="${c}" ${c===s.colorTheme?'selected':''}>${c}</option>`).join('')}</select>
+      </div>
+    </div>
+    <div class="field-group"><label>欄位佔比 (1 或 2)</label>
+      <select id="sk-span"><option value="1" ${s.span==1?'selected':''}>1 欄</option><option value="2" ${s.span==2?'selected':''}>2 欄</option></select>
+    </div>
+    <div class="field-group">
+      <label>技能標籤</label>
+      <div id="sk-tags-container" class="flex flex-wrap gap-1 mb-2">
+        ${s.tags.map(t=>`<span class="tag-pill">${t}<button onclick="removeTag(this,'${id}')">✕</button></span>`).join('')}
+      </div>
+      <div class="flex gap-2">
+        <input type="text" id="sk-tag-input" placeholder="輸入標籤後按 Enter 或點新增" onkeydown="if(event.key==='Enter'){addTag('${id}');event.preventDefault();}">
+        <button class="btn btn-ghost" style="white-space:nowrap" onclick="addTag('${id}')">+ 新增</button>
+      </div>
+    </div>
+    <div class="flex justify-end gap-3 mt-6">
+      <button class="btn btn-ghost" onclick="closeModal()">取消</button>
+      <button class="btn btn-primary" onclick="saveSkillModal('${id}')">儲存</button>
+    </div>`;
+  document.getElementById('modal').classList.remove('hidden');
+}
+
+function addTag(skillId) {
+  const input = document.getElementById('sk-tag-input');
+  const val = input.value.trim();
+  if (!val) return;
+  const s = cvData.skills.find(x => x.id === skillId);
+  if (s && !s.tags.includes(val)) {
+    s.tags.push(val);
+    const container = document.getElementById('sk-tags-container');
+    container.innerHTML += `<span class="tag-pill">${val}<button onclick="removeTag(this,'${skillId}')">✕</button></span>`;
+  }
+  input.value = '';
+}
+
+function removeTag(btn, skillId) {
+  const pill = btn.parentElement;
+  const tagText = pill.textContent.replace('✕','').trim();
+  const s = cvData.skills.find(x => x.id === skillId);
+  if (s) s.tags = s.tags.filter(t => t !== tagText);
+  pill.remove();
+}
+
+function saveSkillModal(id) {
+  const s = cvData.skills.find(x => x.id === id);
+  if (!s) return;
+  s.title = document.getElementById('sk-title').value;
+  s.icon = document.getElementById('sk-icon').value;
+  s.colorTheme = document.getElementById('sk-color').value;
+  s.span = parseInt(document.getElementById('sk-span').value) || 1;
+  closeModal();
+  renderSkillsList();
+}
+
+function collectSkills() { return cvData.skills; }
+
+// ─── Projects ──────────────────────────────────────────────────────────────
+function loadProjectsPanel() { renderProjectsList(); }
+
+function renderProjectsList() {
+  const container = document.getElementById('projects-list');
+  if (!cvData.projects || !cvData.projects.length) {
+    container.innerHTML = '<p class="text-slate-400 text-center py-8">尚無專案</p>';
+    return;
+  }
+  container.innerHTML = cvData.projects.map((p,i) => `
+    <div class="card">
+      <div class="flex items-center justify-between">
+        <div class="flex items-center gap-3">
+          <div class="w-10 h-10 bg-gradient-to-br ${p.gradient} rounded-lg flex items-center justify-center text-white">
+            <i class="${p.icon} text-sm"></i>
+          </div>
+          <div>
+            <div class="font-bold text-slate-800">${p.title.replace('<br>','・')}</div>
+            <div class="text-xs text-slate-400">${(p.techTags||[]).map(t=>t.text).join(' · ')} | ${(p.links||[]).length}個連結</div>
+          </div>
+        </div>
+        <div class="flex gap-2">
+          <button class="btn btn-ghost text-sm" onclick="moveProject('${p.id}',-1)" ${i===0?'disabled':''}>↑</button>
+          <button class="btn btn-ghost text-sm" onclick="moveProject('${p.id}',1)" ${i===cvData.projects.length-1?'disabled':''}>↓</button>
+          <button class="btn btn-ghost text-sm" onclick="openProjectModal('${p.id}')">編輯</button>
+          <button class="btn btn-danger text-sm" onclick="deleteProject('${p.id}')">刪除</button>
+        </div>
+      </div>
+    </div>`).join('');
+}
+
+function addProject() {
+  const np = { id:uid(), title:'新專案', gradient:'from-blue-500 to-indigo-600', icon:'fas fa-code', techTags:[], description:'', links:[] };
+  cvData.projects.push(np);
+  renderProjectsList();
+  openProjectModal(np.id);
+}
+
+function deleteProject(id) {
+  if (!confirm('確定刪除此專案？')) return;
+  cvData.projects = cvData.projects.filter(p => p.id !== id);
+  renderProjectsList();
+}
+
+function moveProject(id, dir) {
+  const idx = cvData.projects.findIndex(p => p.id === id);
+  if (idx < 0) return;
+  const ni = idx + dir;
+  if (ni < 0 || ni >= cvData.projects.length) return;
+  [cvData.projects[idx], cvData.projects[ni]] = [cvData.projects[ni], cvData.projects[idx]];
+  renderProjectsList();
+}
+
+function openProjectModal(id) {
+  const p = cvData.projects.find(x => x.id === id);
+  if (!p) return;
+  const techTagColors = ['blue','green','purple','red','yellow','slate','teal'];
+  document.getElementById('modal-content').innerHTML = `
+    <div class="flex justify-between items-center mb-4">
+      <h3 class="text-lg font-bold text-slate-800">編輯專案</h3>
+      <button onclick="closeModal()" class="text-slate-400 hover:text-slate-600"><i class="fas fa-times text-xl"></i></button>
+    </div>
+    <div class="field-group"><label>標題（可用 &lt;br&gt; 換行）</label><input type="text" id="pj-title" value="${p.title}"></div>
+    <div class="grid grid-cols-2 gap-4">
+      <div class="field-group"><label>漸層色 class</label>
+        <select id="pj-gradient">${gradientOptions.map(g=>`<option value="${g}" ${g===p.gradient?'selected':''}>${g}</option>`).join('')}</select>
+      </div>
+      <div class="field-group"><label>圖示 class</label>
+        <input type="text" id="pj-icon" value="${p.icon}" list="icon-list2">
+        <datalist id="icon-list2">${iconOptions.map(o=>`<option value="${o}">`).join('')}</datalist>
+      </div>
+    </div>
+    <div class="field-group"><label>描述</label><textarea id="pj-desc" rows="3">${p.description||''}</textarea></div>
+    <div class="field-group">
+      <label>技術標籤</label>
+      <div id="pj-tags-container" class="flex flex-wrap gap-1 mb-2">
+        ${(p.techTags||[]).map(t=>`<span class="tag-pill">${t.text}(${t.color})<button onclick="removePjTag(this,'${id}','${t.text}')">✕</button></span>`).join('')}
+      </div>
+      <div class="flex gap-2">
+        <input type="text" id="pj-tag-text" placeholder="標籤文字" style="flex:2">
+        <select id="pj-tag-color" style="flex:1">${techTagColors.map(c=>`<option value="${c}">${c}</option>`).join('')}</select>
+        <button class="btn btn-ghost" style="white-space:nowrap" onclick="addPjTag('${id}')">+ 新增</button>
+      </div>
+    </div>
+    <div class="field-group">
+      <label>連結按鈕</label>
+      <div id="pj-links-container">${(p.links||[]).map((l,li)=>renderLinkRow(id,li,l)).join('')}</div>
+      <button class="btn btn-ghost text-sm mt-2" onclick="addLink('${id}')">+ 新增連結</button>
+    </div>
+    <div class="flex justify-end gap-3 mt-6">
+      <button class="btn btn-ghost" onclick="closeModal()">取消</button>
+      <button class="btn btn-primary" onclick="saveProjectModal('${id}')">儲存</button>
+    </div>`;
+  document.getElementById('modal').classList.remove('hidden');
+}
+
+function renderLinkRow(projId, idx, l) {
+  return `<div class="flex gap-2 mb-2 items-center" id="link-row-${projId}-${idx}">
+    <input type="text" placeholder="按鈕文字" value="${l.text||''}" id="link-text-${projId}-${idx}" style="flex:2">
+    <input type="url" placeholder="URL" value="${l.url||''}" id="link-url-${projId}-${idx}" style="flex:3">
+    <select id="link-style-${projId}-${idx}" style="flex:1">
+      ${['light','primary','outline'].map(s=>`<option value="${s}" ${s===l.style?'selected':''}>${s}</option>`).join('')}
+    </select>
+    <label style="display:flex;align-items:center;gap:4px;font-weight:400;white-space:nowrap;font-size:12px;">
+      <input type="checkbox" id="link-full-${projId}-${idx}" ${l.fullWidth?'checked':''}> 全寬
+    </label>
+    <button class="btn btn-danger text-xs" onclick="removeLinkRow('${projId}',${idx})">✕</button>
+  </div>`;
+}
+
+function addLink(projId) {
+  const p = cvData.projects.find(x => x.id === projId);
+  if (!p) return;
+  const idx = p.links.length;
+  p.links.push({ text:'', url:'', style:'light', fullWidth:false });
+  document.getElementById('pj-links-container').innerHTML += renderLinkRow(projId, idx, p.links[idx]);
+}
+
+function removeLinkRow(projId, idx) {
+  const row = document.getElementById(`link-row-${projId}-${idx}`);
+  if (row) row.remove();
+  const p = cvData.projects.find(x => x.id === projId);
+  if (p) p.links.splice(idx, 1);
+}
+
+function addPjTag(projId) {
+  const text = document.getElementById('pj-tag-text').value.trim();
+  const color = document.getElementById('pj-tag-color').value;
+  if (!text) return;
+  const p = cvData.projects.find(x => x.id === projId);
+  if (!p.techTags) p.techTags = [];
+  p.techTags.push({ text, color });
+  document.getElementById('pj-tags-container').innerHTML += `<span class="tag-pill">${text}(${color})<button onclick="removePjTag(this,'${projId}','${text}')">✕</button></span>`;
+  document.getElementById('pj-tag-text').value = '';
+}
+
+function removePjTag(btn, projId, tagText) {
+  btn.parentElement.remove();
+  const p = cvData.projects.find(x => x.id === projId);
+  if (p) p.techTags = p.techTags.filter(t => t.text !== tagText);
+}
+
+function saveProjectModal(id) {
+  const p = cvData.projects.find(x => x.id === id);
+  if (!p) return;
+  p.title = document.getElementById('pj-title').value;
+  p.gradient = document.getElementById('pj-gradient').value;
+  p.icon = document.getElementById('pj-icon').value;
+  p.description = document.getElementById('pj-desc').value;
+  // Collect links
+  p.links = p.links.map((l, i) => {
+    const textEl = document.getElementById(`link-text-${id}-${i}`);
+    const urlEl = document.getElementById(`link-url-${id}-${i}`);
+    const styleEl = document.getElementById(`link-style-${id}-${i}`);
+    const fullEl = document.getElementById(`link-full-${id}-${i}`);
+    if (!textEl) return null;
+    return { text: textEl.value, url: urlEl.value, style: styleEl.value, fullWidth: fullEl.checked };
+  }).filter(Boolean);
+  closeModal();
+  renderProjectsList();
+}
+
+function collectProjects() { return cvData.projects; }
+
+// ─── Experience ────────────────────────────────────────────────────────────
+function loadExperiencePanel() { renderExperienceList(); }
+
+function renderExperienceList() {
+  const container = document.getElementById('experience-list');
+  if (!cvData.experience || !cvData.experience.length) {
+    container.innerHTML = '<p class="text-slate-400 text-center py-8">尚無工作經歷</p>';
+    return;
+  }
+  container.innerHTML = cvData.experience.map((e,i) => `
+    <div class="card">
+      <div class="flex items-center justify-between">
+        <div>
+          <div class="font-bold text-slate-800">${e.title} <span class="text-sm font-normal text-slate-500">@ ${e.company||'(多家公司)'}</span></div>
+          <div class="text-xs text-slate-400">${e.period} | 類型: ${e.contentType} | 位置: ${e.side}</div>
+        </div>
+        <div class="flex gap-2">
+          <button class="btn btn-ghost text-sm" onclick="moveExp('${e.id}',-1)" ${i===0?'disabled':''}>↑</button>
+          <button class="btn btn-ghost text-sm" onclick="moveExp('${e.id}',1)" ${i===cvData.experience.length-1?'disabled':''}>↓</button>
+          <button class="btn btn-ghost text-sm" onclick="openExpModal('${e.id}')">編輯</button>
+          <button class="btn btn-danger text-sm" onclick="deleteExp('${e.id}')">刪除</button>
+        </div>
+      </div>
+    </div>`).join('');
+}
+
+function addExperience() {
+  const ne = { id:uid(), period:'', yearsNote:'', title:'新職位', company:'', contentType:'text', side:'right', dotColor:'bg-slate-300', content:'' };
+  cvData.experience.push(ne);
+  renderExperienceList();
+  openExpModal(ne.id);
+}
+
+function deleteExp(id) {
+  if (!confirm('確定刪除此工作經歷？')) return;
+  cvData.experience = cvData.experience.filter(e => e.id !== id);
+  renderExperienceList();
+}
+
+function moveExp(id, dir) {
+  const idx = cvData.experience.findIndex(e => e.id === id);
+  if (idx < 0) return;
+  const ni = idx + dir;
+  if (ni < 0 || ni >= cvData.experience.length) return;
+  [cvData.experience[idx], cvData.experience[ni]] = [cvData.experience[ni], cvData.experience[idx]];
+  renderExperienceList();
+}
+
+function openExpModal(id) {
+  const e = cvData.experience.find(x => x.id === id);
+  if (!e) return;
+  const isArray = Array.isArray(e.content);
+  const contentVal = isArray ? e.content.join('\n') : (e.content || '');
+  document.getElementById('modal-content').innerHTML = `
+    <div class="flex justify-between items-center mb-4">
+      <h3 class="text-lg font-bold text-slate-800">編輯工作經歷</h3>
+      <button onclick="closeModal()" class="text-slate-400 hover:text-slate-600"><i class="fas fa-times text-xl"></i></button>
+    </div>
+    <div class="grid grid-cols-2 gap-4">
+      <div class="field-group"><label>期間</label><input type="text" id="ex-period" value="${e.period||''}"></div>
+      <div class="field-group"><label>年資備註</label><input type="text" id="ex-yearsNote" value="${e.yearsNote||''}"></div>
+    </div>
+    <div class="field-group"><label>職稱</label><input type="text" id="ex-title" value="${e.title||''}"></div>
+    <div class="field-group"><label>公司名稱</label><input type="text" id="ex-company" value="${e.company||''}"></div>
+    <div class="grid grid-cols-3 gap-4">
+      <div class="field-group"><label>內容類型</label>
+        <select id="ex-type" onchange="toggleExpContent()">
+          <option value="text" ${e.contentType==='text'?'selected':''}>純文字</option>
+          <option value="list" ${e.contentType==='list'?'selected':''}>條列清單</option>
+          <option value="companies" ${e.contentType==='companies'?'selected':''}>多公司</option>
+        </select>
+      </div>
+      <div class="field-group"><label>時間軸位置</label>
+        <select id="ex-side">
+          <option value="right" ${e.side==='right'?'selected':''}>右側（日期在左）</option>
+          <option value="left" ${e.side==='left'?'selected':''}>左側（日期在右）</option>
+        </select>
+      </div>
+      <div class="field-group"><label>圓點顏色</label>
+        <select id="ex-dot">
+          <option value="bg-secondary" ${e.dotColor==='bg-secondary'?'selected':''}>藍色</option>
+          <option value="bg-slate-300" ${e.dotColor==='bg-slate-300'?'selected':''}>灰色</option>
+        </select>
+      </div>
+    </div>
+    <div class="field-group" id="ex-content-wrap">
+      <label id="ex-content-label">內容（條列類型每行一項，可使用 HTML）</label>
+      <textarea id="ex-content" rows="6">${contentVal}</textarea>
+      <p id="ex-content-hint" class="text-xs text-slate-400 mt-1"></p>
+    </div>
+    <div class="flex justify-end gap-3 mt-6">
+      <button class="btn btn-ghost" onclick="closeModal()">取消</button>
+      <button class="btn btn-primary" onclick="saveExpModal('${id}')">儲存</button>
+    </div>`;
+  document.getElementById('modal').classList.remove('hidden');
+  toggleExpContent();
+}
+
+function toggleExpContent() {
+  const type = document.getElementById('ex-type').value;
+  const hint = document.getElementById('ex-content-hint');
+  if (type === 'text') {
+    hint.textContent = '直接輸入描述文字。';
+  } else if (type === 'list') {
+    hint.textContent = '每行為一個清單項目，可使用 HTML（如 <span class="...">粗體：</span>文字）。';
+  } else {
+    hint.textContent = '每行代表一家公司，可使用 HTML（如 <span class="font-semibold">公司名：</span>說明）。';
+  }
+}
+
+function saveExpModal(id) {
+  const e = cvData.experience.find(x => x.id === id);
+  if (!e) return;
+  e.period = document.getElementById('ex-period').value;
+  e.yearsNote = document.getElementById('ex-yearsNote').value;
+  e.title = document.getElementById('ex-title').value;
+  e.company = document.getElementById('ex-company').value;
+  e.contentType = document.getElementById('ex-type').value;
+  e.side = document.getElementById('ex-side').value;
+  e.dotColor = document.getElementById('ex-dot').value;
+  const rawContent = document.getElementById('ex-content').value;
+  if (e.contentType === 'text') {
+    e.content = rawContent;
+  } else {
+    e.content = rawContent.split('\n').map(l=>l.trim()).filter(Boolean);
+  }
+  closeModal();
+  renderExperienceList();
+}
+
+function collectExperience() { return cvData.experience; }
+
+// ─── Education ─────────────────────────────────────────────────────────────
+function loadEducationPanel() {
+  renderEduAdminList();
+  renderCertAdminList();
+  const r = cvData.referee || {};
+  document.getElementById('referee-name').value = r.name || '';
+  document.getElementById('referee-role').value = r.role || '';
+}
+
+function renderEduAdminList() {
+  document.getElementById('edu-admin-list').innerHTML = (cvData.education||[]).map((e,i) => `
+    <div class="flex items-center gap-2 p-3 border border-slate-200 rounded-lg">
+      <div class="flex-1 grid grid-cols-3 gap-2">
+        <input type="text" value="${e.school||''}" placeholder="學校" onchange="cvData.education[${i}].school=this.value">
+        <input type="text" value="${e.degree||''}" placeholder="學位" onchange="cvData.education[${i}].degree=this.value">
+        <input type="text" value="${e.year||''}" placeholder="年份 e.g. 2009.06" style="width:auto" onchange="cvData.education[${i}].year=this.value">
+      </div>
+      <button class="btn btn-danger text-sm flex-shrink-0" onclick="deleteEdu(${i})">刪除</button>
+    </div>`).join('');
+}
+
+function addEdu() {
+  if (!cvData.education) cvData.education = [];
+  cvData.education.push({ id:uid(), school:'', degree:'', year:'' });
+  renderEduAdminList();
+}
+
+function deleteEdu(i) {
+  if (!confirm('確定刪除？')) return;
+  cvData.education.splice(i,1);
+  renderEduAdminList();
+}
+
+function renderCertAdminList() {
+  document.getElementById('cert-admin-list').innerHTML = (cvData.certifications||[]).map((c,i) => `
+    <div class="flex items-center gap-2">
+      <input type="text" value="${c.text||''}" placeholder="認證名稱" class="flex-1" onchange="cvData.certifications[${i}].text=this.value">
+      <button class="btn btn-danger text-sm flex-shrink-0" onclick="deleteCert(${i})">刪除</button>
+    </div>`).join('');
+}
+
+function addCert() {
+  if (!cvData.certifications) cvData.certifications = [];
+  cvData.certifications.push({ id:uid(), text:'' });
+  renderCertAdminList();
+}
+
+function deleteCert(i) {
+  if (!confirm('確定刪除？')) return;
+  cvData.certifications.splice(i,1);
+  renderCertAdminList();
+}
+
+function collectEducation() {
+  return (cvData.education || []).map((e,i) => {
+    const row = document.getElementById('edu-admin-list').children[i];
+    if (row) {
+      const inputs = row.querySelectorAll('input');
+      return { ...e, school: inputs[0].value, degree: inputs[1].value, year: inputs[2].value };
+    }
+    return e;
+  });
+}
+
+function collectCertifications() {
+  return (cvData.certifications || []).map((c,i) => {
+    const row = document.getElementById('cert-admin-list').children[i];
+    if (row) {
+      const input = row.querySelector('input');
+      return { ...c, text: input ? input.value : c.text };
+    }
+    return c;
+  });
+}
+
+// ─── Other ─────────────────────────────────────────────────────────────────
+function loadOtherPanel() {
+  const f = cvData.footer || {};
+  const i = cvData.i18nZh || {};
+  document.getElementById('footer-name-val').value = f.name || '';
+  document.getElementById('footer-subtitle-val').value = i.footer_subtitle || '';
+  document.getElementById('footer-copyright-val').value = i.footer_copyright || '';
+  document.getElementById('footer-email-val').value = f.email || '';
+  document.getElementById('footer-github-val').value = f.githubUrl || '';
+  document.getElementById('footer-linkedin-val').value = f.linkedinUrl || '';
+}
+
+function resetAllData() {
+  if (!confirm('確定要將所有資料重置為預設值？此動作無法復原。')) return;
+  localStorage.removeItem('hogan_cv_data');
+  cvData = JSON.parse(JSON.stringify(defaultData));
+  initAllPanels();
+  showToast('已重置為預設值');
+}
+
+// ─── Modal ─────────────────────────────────────────────────────────────────
+function closeModal() { document.getElementById('modal').classList.add('hidden'); }
+document.getElementById('modal').addEventListener('click', e => {
+  if (e.target === document.getElementById('modal')) closeModal();
+});
+
+// ─── Init ──────────────────────────────────────────────────────────────────
+function initAllPanels() {
+  loadHeroPanel();
+  loadAboutPanel();
+  loadSkillsPanel();
+  loadProjectsPanel();
+  loadExperiencePanel();
+  loadEducationPanel();
+  loadOtherPanel();
+}
+
+function initAdmin() {
+  loadCvData();
+  initAllPanels();
+}
+
+// Check session on load
+if (localStorage.getItem('cv_admin_session') === '1') {
+  document.getElementById('login-screen').classList.add('hidden');
+  document.getElementById('admin-app').classList.remove('hidden');
+  initAdmin();
+}
+
+document.getElementById('login-pw').addEventListener('keydown', e => {
+  if (e.key === 'Enter') doLogin();
+});
+</script>
+</body>
+</html>
