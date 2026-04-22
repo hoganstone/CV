@@ -8,8 +8,15 @@
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 <style>
   body { font-family: system-ui, sans-serif; }
-  .sidebar-link { @apply flex items-center gap-3 px-4 py-2.5 rounded-lg text-slate-300 hover:bg-slate-700 hover:text-white transition-colors cursor-pointer; }
-  .sidebar-link.active { @apply bg-blue-600 text-white; }
+  .sidebar-link {
+    display: flex; align-items: center; gap: 12px;
+    padding: 10px 16px; border-radius: 8px;
+    color: #e2e8f0; font-size: 14px; font-weight: 500;
+    cursor: pointer; transition: background-color 0.15s, color 0.15s;
+    user-select: none;
+  }
+  .sidebar-link:hover { background-color: #475569; color: #ffffff; }
+  .sidebar-link.active { background-color: #2563eb; color: #ffffff; font-weight: 600; }
   .section-panel { display: none; }
   .section-panel.active { display: block; }
   .tag-pill { display:inline-flex; align-items:center; gap:4px; background:#eff6ff; color:#1d4ed8; border-radius:9999px; padding:2px 10px; font-size:13px; margin:2px; }
