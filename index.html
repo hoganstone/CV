@@ -257,32 +257,43 @@ const defaultData = {
       tags:['IPMA D 級專案管理師','ISO 9001:2015 主導稽核員','SAP ERP (PP/MM/SD)','PDM','QFD / TRIZ / SPC'] }
   ],
   projects: [
+    { id:'p0', title:'ESG 永續顧問網站<br>DEMO 平台',
+      gradient:'from-green-500 to-teal-600', icon:'fas fa-leaf',
+      techTags:[{text:'Nuxt.js',color:'blue'},{text:'Node.js',color:'green'},{text:'RESTful API',color:'purple'},{text:'PostgreSQL',color:'teal'}],
+      description:'為永續顧問公司建置之 ESG 官方網站與後台管理系統，整合資料庫設計與 API 架構，提供完整的內容管理功能。',
+      account:'admin@esg.com', password:'admin123456',
+      links:[{text:'前台 Demo',url:'https://esg-frontend-pied.vercel.app',style:'light'},{text:'後台 Demo',url:'https://esg-admin-backend.vercel.app/admin/login',style:'primary'}]
+    },
     { id:'p1', title:'資源再生協會<br>網站與管理系統',
       gradient:'from-blue-500 to-indigo-600', icon:'fas fa-recycle',
       techTags:[{text:'Nuxt.js',color:'blue'},{text:'Node.js',color:'green'},{text:'RESTful API',color:'purple'}],
       description:'為 RRA 資源再生協會建置之官方網站與專屬後台管理系統，提供完善的內容發布與資料管理功能。',
+      account:'jerry@rra.com', password:'admin1234',
       links:[{text:'前台 Demo',url:'https://rra-website.vercel.app/',style:'light'},{text:'後台 Demo',url:'https://rra-website.vercel.app/admin',style:'primary'}]
     },
     { id:'p2', title:'鋼鐵公會統計網<br>DEMO 平台',
       gradient:'from-slate-700 to-slate-900', icon:'fas fa-industry',
       techTags:[{text:'Nuxt 3',color:'blue'},{text:'Laravel 12',color:'red'}],
       description:'建構鋼鐵產業統計資料庫之展示與查詢平台，前台提供資料視覺化與搜尋，後台負責資料更新與會員權限管理。',
+      account:'admin', password:'Admin@1234',
       links:[{text:'前台 Demo',url:'https://tsiia-web.vercel.app/',style:'light'},{text:'後台 Demo',url:'https://tsiia-web.vercel.app/login',style:'primary'}]
     },
     { id:'p3', title:'鋼鐵聯合會<br>公會系統 & 會籍統計',
       gradient:'from-teal-500 to-emerald-600', icon:'fas fa-users-cog',
       techTags:[{text:'Vue 3',color:'green'},{text:'Express/Node',color:'yellow'}],
       description:'開發鋼鐵公會聯合會的對外網站與會籍統計管理系統，數位化整合傳統會務管理流程。',
+      account:'wsa', password:'admin1234',
       links:[
         {text:'聯合會前台',url:'https://steel-guild-vue.vercel.app/',style:'light'},
         {text:'聯合會後台',url:'https://steel-guild-vue.vercel.app/admin',style:'outline'},
-        {text:'會籍統計系統 Demo',url:'https://steelmember.vercel.app/admin/login',style:'primary',fullWidth:true}
+        {text:'會籍統計系統 Demo',url:'https://steelmember-zeta.vercel.app/admin',style:'primary',fullWidth:true}
       ]
     },
     { id:'p4', title:'海石日式料理<br>線上訂餐網',
       gradient:'from-orange-400 to-red-500', icon:'fas fa-utensils',
       techTags:[{text:'Vue.js',color:'green'},{text:'六角 API',color:'slate'}],
       description:'包含完整購物車流程的電子商務 SPA (Single Page Application)，具備前台商品展示選購與後台商品庫存上架管理。',
+      account:'hogan.shih@gmail.com', password:'agl6575',
       links:[{text:'購物車前台',url:'https://hoganstone.github.io/japanese-restaurant/#/',style:'light'},{text:'管理後台',url:'https://hoganstone.github.io/japanese-restaurant/#/admin/products',style:'primary'}]
     }
   ],
@@ -346,7 +357,21 @@ function loadData() {
 function deepMerge(base, override) {
   const result = JSON.parse(JSON.stringify(base));
   for (const key in override) {
-    if (Array.isArray(override[key])) {
+    if (key === 'projects' && Array.isArray(override[key])) {
+      // Id-based merge: start from base defaults, overlay saved data per id
+      const savedById = {};
+      override[key].forEach(p => { savedById[p.id] = p; });
+      result[key] = base[key].map(bp => {
+        const sp = savedById[bp.id];
+        if (!sp) return bp;
+        // Merge saved project onto base, preserving new fields like account/password
+        return Object.assign({}, bp, sp);
+      });
+      // Append any saved projects not in base defaults
+      override[key].forEach(sp => {
+        if (!base[key].find(bp => bp.id === sp.id)) result[key].push(sp);
+      });
+    } else if (Array.isArray(override[key])) {
       result[key] = override[key];
     } else if (typeof override[key] === 'object' && override[key] !== null) {
       result[key] = deepMerge(base[key] || {}, override[key]);
@@ -423,7 +448,11 @@ function renderProjects(projects) {
       <div class="p-6 flex-grow flex flex-col justify-between">
         <div>
           <div class="flex flex-wrap gap-2 mb-4">${tagsHtml}</div>
-          <p class="text-slate-600 text-sm mb-6">${p.description}</p>
+          <p class="text-slate-600 text-sm mb-4">${p.description}</p>
+          ${(p.account||p.password) ? `<div class="bg-slate-50 border border-slate-200 rounded-lg px-4 py-3 mb-4 text-xs text-slate-600 space-y-1">
+            ${p.account ? `<div class="flex items-center gap-2"><i class="fas fa-user w-3 text-slate-400"></i><span class="font-medium text-slate-500">帳號：</span>${p.account}</div>` : ''}
+            ${p.password ? `<div class="flex items-center gap-2"><i class="fas fa-key w-3 text-slate-400"></i><span class="font-medium text-slate-500">密碼：</span>${p.password}</div>` : ''}
+          </div>` : ''}
         </div>
         ${linksContainer}
       </div>

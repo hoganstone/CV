@@ -347,10 +347,11 @@ const defaultData = {
     { id:'s5', title:'專案管理與品保', icon:'fas fa-tasks', colorTheme:'red', span:2, tags:['IPMA D 級專案管理師','ISO 9001:2015 主導稽核員','SAP ERP (PP/MM/SD)','PDM','QFD / TRIZ / SPC'] }
   ],
   projects: [
-    { id:'p1', title:'資源再生協會<br>網站與管理系統', gradient:'from-blue-500 to-indigo-600', icon:'fas fa-recycle', techTags:[{text:'Nuxt.js',color:'blue'},{text:'Node.js',color:'green'},{text:'RESTful API',color:'purple'}], description:'為 RRA 資源再生協會建置之官方網站與專屬後台管理系統，提供完善的內容發布與資料管理功能。', links:[{text:'前台 Demo',url:'https://rra-website.vercel.app/',style:'light'},{text:'後台 Demo',url:'https://rra-website.vercel.app/admin',style:'primary'}] },
-    { id:'p2', title:'鋼鐵公會統計網<br>DEMO 平台', gradient:'from-slate-700 to-slate-900', icon:'fas fa-industry', techTags:[{text:'Nuxt 3',color:'blue'},{text:'Laravel 12',color:'red'}], description:'建構鋼鐵產業統計資料庫之展示與查詢平台，前台提供資料視覺化與搜尋，後台負責資料更新與會員權限管理。', links:[{text:'前台 Demo',url:'https://tsiia-web.vercel.app/',style:'light'},{text:'後台 Demo',url:'https://tsiia-web.vercel.app/login',style:'primary'}] },
-    { id:'p3', title:'鋼鐵聯合會<br>公會系統 & 會籍統計', gradient:'from-teal-500 to-emerald-600', icon:'fas fa-users-cog', techTags:[{text:'Vue 3',color:'green'},{text:'Express/Node',color:'yellow'}], description:'開發鋼鐵公會聯合會的對外網站與會籍統計管理系統，數位化整合傳統會務管理流程。', links:[{text:'聯合會前台',url:'https://steel-guild-vue.vercel.app/',style:'light'},{text:'聯合會後台',url:'https://steel-guild-vue.vercel.app/admin',style:'outline'},{text:'會籍統計系統 Demo',url:'https://steelmember.vercel.app/admin/login',style:'primary',fullWidth:true}] },
-    { id:'p4', title:'海石日式料理<br>線上訂餐網', gradient:'from-orange-400 to-red-500', icon:'fas fa-utensils', techTags:[{text:'Vue.js',color:'green'},{text:'六角 API',color:'slate'}], description:'包含完整購物車流程的電子商務 SPA，具備前台商品展示選購與後台商品庫存上架管理。', links:[{text:'購物車前台',url:'https://hoganstone.github.io/japanese-restaurant/#/',style:'light'},{text:'管理後台',url:'https://hoganstone.github.io/japanese-restaurant/#/admin/products',style:'primary'}] }
+    { id:'p0', title:'ESG 永續顧問網站<br>DEMO 平台', gradient:'from-green-500 to-teal-600', icon:'fas fa-leaf', techTags:[{text:'Nuxt.js',color:'blue'},{text:'Node.js',color:'green'},{text:'RESTful API',color:'purple'},{text:'PostgreSQL',color:'teal'}], description:'為永續顧問公司建置之 ESG 官方網站與後台管理系統，整合資料庫設計與 API 架構，提供完整的內容管理功能。', account:'admin@esg.com', password:'admin123456', links:[{text:'前台 Demo',url:'https://esg-frontend-pied.vercel.app',style:'light'},{text:'後台 Demo',url:'https://esg-admin-backend.vercel.app/admin/login',style:'primary'}] },
+    { id:'p1', title:'資源再生協會<br>網站與管理系統', gradient:'from-blue-500 to-indigo-600', icon:'fas fa-recycle', techTags:[{text:'Nuxt.js',color:'blue'},{text:'Node.js',color:'green'},{text:'RESTful API',color:'purple'}], description:'為 RRA 資源再生協會建置之官方網站與專屬後台管理系統，提供完善的內容發布與資料管理功能。', account:'jerry@rra.com', password:'admin1234', links:[{text:'前台 Demo',url:'https://rra-website.vercel.app/',style:'light'},{text:'後台 Demo',url:'https://rra-website.vercel.app/admin',style:'primary'}] },
+    { id:'p2', title:'鋼鐵公會統計網<br>DEMO 平台', gradient:'from-slate-700 to-slate-900', icon:'fas fa-industry', techTags:[{text:'Nuxt 3',color:'blue'},{text:'Laravel 12',color:'red'}], description:'建構鋼鐵產業統計資料庫之展示與查詢平台，前台提供資料視覺化與搜尋，後台負責資料更新與會員權限管理。', account:'admin', password:'Admin@1234', links:[{text:'前台 Demo',url:'https://tsiia-web.vercel.app/',style:'light'},{text:'後台 Demo',url:'https://tsiia-web.vercel.app/login',style:'primary'}] },
+    { id:'p3', title:'鋼鐵聯合會<br>公會系統 & 會籍統計', gradient:'from-teal-500 to-emerald-600', icon:'fas fa-users-cog', techTags:[{text:'Vue 3',color:'green'},{text:'Express/Node',color:'yellow'}], description:'開發鋼鐵公會聯合會的對外網站與會籍統計管理系統，數位化整合傳統會務管理流程。', account:'wsa', password:'admin1234', links:[{text:'聯合會前台',url:'https://steel-guild-vue.vercel.app/',style:'light'},{text:'聯合會後台',url:'https://steel-guild-vue.vercel.app/admin',style:'outline'},{text:'會籍統計系統 Demo',url:'https://steelmember-zeta.vercel.app/admin',style:'primary',fullWidth:true}] },
+    { id:'p4', title:'海石日式料理<br>線上訂餐網', gradient:'from-orange-400 to-red-500', icon:'fas fa-utensils', techTags:[{text:'Vue.js',color:'green'},{text:'六角 API',color:'slate'}], description:'包含完整購物車流程的電子商務 SPA，具備前台商品展示選購與後台商品庫存上架管理。', account:'hogan.shih@gmail.com', password:'agl6575', links:[{text:'購物車前台',url:'https://hoganstone.github.io/japanese-restaurant/#/',style:'light'},{text:'管理後台',url:'https://hoganstone.github.io/japanese-restaurant/#/admin/products',style:'primary'}] }
   ],
   experience: [
     { id:'e1', period:'1999 - 2018', yearsNote:'19年資歷', title:'資訊組 組長', company:'台灣鋼鐵工業同業公會', contentType:'list', side:'right', dotColor:'bg-secondary', content:['<span class="font-medium text-slate-700">系統重構與開發：</span>使用 .NET、PHP、JavaScript 等技術取代原 IBM AS400，獨立建構 Web 化資訊平台。','<span class="font-medium text-slate-700">創造營收：</span>規劃運作台灣原產地證明簽發系統，年收入貢獻約 200 萬元。開發付費產業統計查詢網站。','<span class="font-medium text-slate-700">IT 基礎架構管理：</span>統籌維護 Firewall、Web/Mail Server、網域及軟硬體設備。','<span class="font-medium text-slate-700">政府專案主導：</span>完成經濟部商業司 PKI 標案（約 150 萬元）。'] },
@@ -379,14 +380,37 @@ function loadCvData() {
     const saved = localStorage.getItem('hogan_cv_data');
     if (saved) {
       cvData = JSON.parse(saved);
-      // Ensure i18nZh exists
       if (!cvData.i18nZh) cvData.i18nZh = JSON.parse(JSON.stringify(defaultData.i18nZh));
+      migrateProjects();
     } else {
       cvData = JSON.parse(JSON.stringify(defaultData));
     }
   } catch(e) {
     cvData = JSON.parse(JSON.stringify(defaultData));
   }
+}
+
+function migrateProjects() {
+  if (!cvData.projects) { cvData.projects = JSON.parse(JSON.stringify(defaultData.projects)); return; }
+  // Add missing default projects and fill missing account/password fields
+  defaultData.projects.forEach(dp => {
+    const existing = cvData.projects.find(p => p.id === dp.id);
+    if (!existing) {
+      cvData.projects.unshift(JSON.parse(JSON.stringify(dp)));
+    } else {
+      if (!existing.account && dp.account) existing.account = dp.account;
+      if (!existing.password && dp.password) existing.password = dp.password;
+    }
+  });
+  // Sort projects to match defaultData order, extra saved projects go at end
+  const defaultOrder = defaultData.projects.map(p => p.id);
+  cvData.projects.sort((a, b) => {
+    const ai = defaultOrder.indexOf(a.id), bi = defaultOrder.indexOf(b.id);
+    if (ai === -1 && bi === -1) return 0;
+    if (ai === -1) return 1;
+    if (bi === -1) return -1;
+    return ai - bi;
+  });
 }
 
 function saveCvData() {
@@ -674,7 +698,7 @@ function renderProjectsList() {
 }
 
 function addProject() {
-  const np = { id:uid(), title:'新專案', gradient:'from-blue-500 to-indigo-600', icon:'fas fa-code', techTags:[], description:'', links:[] };
+  const np = { id:uid(), title:'新專案', gradient:'from-blue-500 to-indigo-600', icon:'fas fa-code', techTags:[], description:'', account:'', password:'', links:[] };
   cvData.projects.push(np);
   renderProjectsList();
   openProjectModal(np.id);
@@ -731,6 +755,10 @@ function openProjectModal(id) {
       </div>
     </div>
     <div class="field-group"><label>描述</label><textarea id="pj-desc" rows="3">${p.description||''}</textarea></div>
+    <div class="grid grid-cols-2 gap-4">
+      <div class="field-group"><label>Demo 帳號</label><input type="text" id="pj-account" value="${p.account||''}" placeholder="登入帳號"></div>
+      <div class="field-group"><label>Demo 密碼</label><input type="text" id="pj-password" value="${p.password||''}" placeholder="登入密碼"></div>
+    </div>
     <div class="field-group">
       <label>技術標籤</label>
       <div id="pj-tags-container" class="flex flex-wrap gap-1 mb-2">
@@ -832,6 +860,8 @@ function saveProjectModal(id) {
   p.gradient = document.getElementById('pj-gradient').value;
   p.icon = document.getElementById('pj-icon').value;
   p.description = document.getElementById('pj-desc').value;
+  p.account = document.getElementById('pj-account').value.trim();
+  p.password = document.getElementById('pj-password').value.trim();
   // Collect links (use lid as stable key, not array index)
   p.links = p.links.map(l => {
     const lid = l.lid;
