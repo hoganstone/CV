@@ -6,6 +6,8 @@
     <title>石恆文 Hogan Shih | AI 網頁開發工程師</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300;400;500;700;900&family=Noto+Sans+JP:wght@300;400;500;700;900&display=swap" rel="stylesheet">
     <script>
         tailwind.config = {
@@ -659,6 +661,69 @@ renderReferee(cvData.referee);
 
 const savedLang = localStorage.getItem('lang') || 'zh';
 setLang(savedLang);
+
+// ─── GSAP Animations ───────────────────────────────────────────────────────
+gsap.registerPlugin(ScrollTrigger);
+
+// Hero
+gsap.from('#home .md\\:w-2\\/3', { opacity: 0, y: 50, duration: 0.9, ease: 'power3.out', delay: 0.2 });
+gsap.from('#home .md\\:w-1\\/3', { opacity: 0, x: 60, duration: 0.9, ease: 'power3.out', delay: 0.45 });
+
+// Contact bar
+gsap.from('#contact > div', {
+  opacity: 0, y: 30, duration: 0.6, stagger: 0.15, ease: 'power2.out',
+  scrollTrigger: { trigger: '#contact', start: 'top 88%' }
+});
+
+// Section headings (About / Skills / Projects / Experience)
+gsap.utils.toArray('section .text-center.mb-16, section .text-center.mb-16 ~ *').forEach(el => {
+  gsap.from(el, {
+    opacity: 0, y: 30, duration: 0.7, ease: 'power2.out',
+    scrollTrigger: { trigger: el, start: 'top 85%' }
+  });
+});
+
+// About block
+gsap.from('#about .bg-white', {
+  opacity: 0, y: 40, duration: 0.8, ease: 'power2.out',
+  scrollTrigger: { trigger: '#about .bg-white', start: 'top 85%' }
+});
+
+// Skills cards (stagger)
+ScrollTrigger.create({
+  trigger: '#skills-grid',
+  start: 'top 82%',
+  onEnter: () => gsap.from('#skills-grid > div', {
+    opacity: 0, y: 50, duration: 0.6, stagger: 0.12, ease: 'power2.out'
+  })
+});
+
+// Project cards (stagger)
+ScrollTrigger.create({
+  trigger: '#projects-grid',
+  start: 'top 82%',
+  onEnter: () => gsap.from('#projects-grid > div', {
+    opacity: 0, y: 60, duration: 0.65, stagger: 0.1, ease: 'power2.out'
+  })
+});
+
+// Experience timeline items (alternating left/right)
+ScrollTrigger.create({
+  trigger: '#experience-timeline',
+  start: 'top 82%',
+  onEnter: () => {
+    document.querySelectorAll('#experience-timeline > div').forEach((el, i) => {
+      const fromX = el.querySelector('.md\\:text-right') ? -50 : 50;
+      gsap.from(el, { opacity: 0, x: fromX, duration: 0.7, delay: i * 0.15, ease: 'power2.out' });
+    });
+  }
+});
+
+// Education & Certification
+gsap.from('#edu-list > div, #cert-list > li', {
+  opacity: 0, x: -30, duration: 0.6, stagger: 0.1, ease: 'power2.out',
+  scrollTrigger: { trigger: '#edu-list', start: 'top 85%' }
+});
 </script>
 </body>
 </html>
