@@ -707,6 +707,7 @@ function addProject() {
 function deleteProject(id) {
   if (!confirm('確定刪除此專案？')) return;
   cvData.projects = cvData.projects.filter(p => p.id !== id);
+  saveCvData();
   renderProjectsList();
 }
 
@@ -716,6 +717,7 @@ function moveProject(id, dir) {
   const ni = idx + dir;
   if (ni < 0 || ni >= cvData.projects.length) return;
   [cvData.projects[idx], cvData.projects[ni]] = [cvData.projects[ni], cvData.projects[idx]];
+  saveCvData();
   renderProjectsList();
 }
 

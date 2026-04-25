@@ -357,21 +357,7 @@ function loadData() {
 function deepMerge(base, override) {
   const result = JSON.parse(JSON.stringify(base));
   for (const key in override) {
-    if (key === 'projects' && Array.isArray(override[key])) {
-      // Id-based merge: start from base defaults, overlay saved data per id
-      const savedById = {};
-      override[key].forEach(p => { savedById[p.id] = p; });
-      result[key] = base[key].map(bp => {
-        const sp = savedById[bp.id];
-        if (!sp) return bp;
-        // Merge saved project onto base, preserving new fields like account/password
-        return Object.assign({}, bp, sp);
-      });
-      // Append any saved projects not in base defaults
-      override[key].forEach(sp => {
-        if (!base[key].find(bp => bp.id === sp.id)) result[key].push(sp);
-      });
-    } else if (Array.isArray(override[key])) {
+    if (Array.isArray(override[key])) {
       result[key] = override[key];
     } else if (typeof override[key] === 'object' && override[key] !== null) {
       result[key] = deepMerge(base[key] || {}, override[key]);
