@@ -815,12 +815,21 @@ function removeLinkRow(projId, lid) {
 function uploadPjImage(input) {
   const file = input.files[0];
   if (!file) return;
-  const reader = new FileReader();
-  reader.onload = e => {
-    document.getElementById('pj-image').value = e.target.result;
+  const img = new Image();
+  const url = URL.createObjectURL(file);
+  img.onload = () => {
+    const MAX_W = 900, MAX_H = 450;
+    let w = img.naturalWidth, h = img.naturalHeight;
+    if (w > MAX_W) { h = Math.round(h * MAX_W / w); w = MAX_W; }
+    if (h > MAX_H) { w = Math.round(w * MAX_H / h); h = MAX_H; }
+    const canvas = document.createElement('canvas');
+    canvas.width = w; canvas.height = h;
+    canvas.getContext('2d').drawImage(img, 0, 0, w, h);
+    document.getElementById('pj-image').value = canvas.toDataURL('image/jpeg', 0.82);
     previewPjImage();
+    URL.revokeObjectURL(url);
   };
-  reader.readAsDataURL(file);
+  img.src = url;
 }
 
 function previewPjImage() {
