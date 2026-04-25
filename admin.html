@@ -392,12 +392,10 @@ function loadCvData() {
 
 function migrateProjects() {
   if (!cvData.projects) { cvData.projects = JSON.parse(JSON.stringify(defaultData.projects)); return; }
-  // Add missing default projects and fill missing account/password fields
+  // Fill missing account/password fields from defaults (do NOT re-add deleted projects)
   defaultData.projects.forEach(dp => {
     const existing = cvData.projects.find(p => p.id === dp.id);
-    if (!existing) {
-      cvData.projects.unshift(JSON.parse(JSON.stringify(dp)));
-    } else {
+    if (existing) {
       if (!existing.account && dp.account) existing.account = dp.account;
       if (!existing.password && dp.password) existing.password = dp.password;
     }
