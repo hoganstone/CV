@@ -440,23 +440,39 @@ function renderProjects(projects) {
           <h3 class="text-2xl font-bold z-10 text-center px-4 drop-shadow-md">${p.title}</h3>
         </div>`;
 
-    return `<div class="bg-white rounded-xl shadow-md overflow-hidden hover:-translate-y-2 transition-transform duration-300 flex flex-col h-full border border-slate-100">
-      ${cardHeader}
-      <div class="px-6 pt-6 pb-4 flex-grow">
-        <div class="flex flex-wrap gap-2 mb-4">${tagsHtml}</div>
-        <p class="text-slate-600 text-sm">${p.description}</p>
-      </div>
-      ${(p.account||p.password) ? `<div class="px-6 pb-4">
-        <div class="bg-slate-50 border border-slate-200 rounded-lg px-4 py-3 text-xs text-slate-600 space-y-1">
-          ${p.account ? `<div class="flex items-center gap-2"><i class="fas fa-user w-3 text-slate-400"></i><span class="font-medium text-slate-500">帳號：</span>${p.account}</div>` : ''}
-          ${p.password ? `<div class="flex items-center gap-2"><i class="fas fa-key w-3 text-slate-400"></i><span class="font-medium text-slate-500">密碼：</span>${p.password}</div>` : ''}
+    return `<div>
+      <div class="bg-white rounded-xl shadow-md overflow-hidden hover:-translate-y-2 transition-transform duration-300 flex flex-col h-full border border-slate-100">
+        ${cardHeader}
+        <div class="px-6 pt-6 pb-4 flex-grow">
+          <div class="flex flex-wrap gap-2 mb-4">${tagsHtml}</div>
+          <p class="text-slate-600 text-sm">${p.description}</p>
         </div>
-      </div>` : ''}
-      <div class="px-6 pb-6 pt-0">
-        ${linksContainer}
+        ${(p.account||p.password) ? `<div class="px-6 pb-4">
+          <div class="bg-slate-50 border border-slate-200 rounded-lg px-4 py-3 text-xs text-slate-600 space-y-1">
+            ${p.account ? `<div class="flex items-center gap-2"><i class="fas fa-user w-3 text-slate-400"></i><span class="font-medium text-slate-500">帳號：</span>${p.account}</div>` : ''}
+            ${p.password ? `<div class="flex items-center gap-2"><i class="fas fa-key w-3 text-slate-400"></i><span class="font-medium text-slate-500">密碼：</span>${p.password}</div>` : ''}
+          </div>
+        </div>` : ''}
+        <div class="px-6 pb-6 pt-0">
+          ${linksContainer}
+        </div>
       </div>
     </div>`;
   }).join('');
+}
+
+function equalizeProjectCards() {
+  const grid = document.getElementById('projects-grid');
+  if (!grid || !grid.children.length) return;
+  const items = [...grid.children];
+  items.forEach(item => item.style.height = '');
+  const cols = getComputedStyle(grid).gridTemplateColumns.trim().split(/\s+/).length;
+  if (cols < 2) return;
+  for (let i = 0; i < items.length; i += cols) {
+    const row = items.slice(i, i + cols);
+    const maxH = Math.max(...row.map(el => el.offsetHeight));
+    row.forEach(el => el.style.height = maxH + 'px');
+  }
 }
 
 function renderExperience(experience) {
@@ -665,6 +681,7 @@ applyI18nOverrides(cvData);
 applyHeroAndFooter(cvData);
 renderSkills(cvData.skills);
 renderProjects(cvData.projects.filter(p => p.visible !== false));
+requestAnimationFrame(equalizeProjectCards);
 renderExperience(cvData.experience);
 renderEducation(cvData.education);
 renderCertifications(cvData.certifications);
@@ -672,6 +689,11 @@ renderReferee(cvData.referee);
 
 const savedLang = localStorage.getItem('lang') || 'zh';
 setLang(savedLang);
+
+window.addEventListener('load', equalizeProjectCards);
+document.fonts.ready.then(equalizeProjectCards);
+let _eqTimer;
+window.addEventListener('resize', () => { clearTimeout(_eqTimer); _eqTimer = setTimeout(equalizeProjectCards, 150); });
 
 // ─── GSAP Animations ───────────────────────────────────────────────────────
 gsap.registerPlugin(ScrollTrigger);
