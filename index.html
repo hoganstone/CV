@@ -1,0 +1,723 @@
+<!DOCTYPE html>
+<html lang="zh-TW" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>石恆文 Hogan Shih | AI 網頁開發工程師</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300;400;500;700;900&family=Noto+Sans+JP:wght@300;400;500;700;900&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: { sans: ['"Noto Sans TC"', '"Noto Sans JP"', 'sans-serif'] },
+                    colors: { primary: '#1e40af', secondary: '#3b82f6', dark: '#0f172a', light: '#f8fafc' }
+                }
+            }
+        }
+    </script>
+    <style>
+        body { font-family: 'Noto Sans TC', 'Noto Sans JP', sans-serif; }
+        .hero-bg { background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%); }
+        .timeline-line::before {
+            content: ''; position: absolute; left: 0.75rem; top: 0; bottom: 0;
+            width: 2px; background-color: #e2e8f0;
+        }
+        @media (min-width: 768px) { .timeline-line::before { left: 50%; transform: translateX(-50%); } }
+        .lang-btn { color: #475569; transition: color 0.2s; }
+        .lang-btn:hover { color: #1e40af; }
+        .lang-btn.active { color: #3b82f6; font-weight: 700; }
+    </style>
+</head>
+<body class="bg-light text-slate-700 antialiased selection:bg-secondary selection:text-white">
+
+<!-- Tailwind safelist (hidden) -->
+<div class="hidden
+  bg-blue-100 text-blue-600 group-hover:bg-blue-600 bg-blue-700
+  bg-green-100 text-green-600 group-hover:bg-green-600 bg-green-700
+  bg-purple-100 text-purple-600 group-hover:bg-purple-600 bg-purple-700
+  bg-yellow-100 text-yellow-600 group-hover:bg-yellow-600 bg-yellow-700
+  bg-red-100 text-red-600 group-hover:bg-red-600 bg-red-700
+  bg-teal-100 text-teal-600 group-hover:bg-teal-600 bg-teal-700
+  bg-slate-100 text-slate-700 bg-slate-600
+  text-blue-700 text-green-700 text-purple-700 text-red-700 text-yellow-700
+  from-blue-500 to-indigo-600 from-slate-700 to-slate-900
+  from-teal-500 to-emerald-600 from-orange-400 to-red-500
+  from-green-500 to-emerald-600 from-violet-500 to-purple-600
+  from-cyan-500 to-blue-500 from-pink-500 to-rose-500
+  lg:col-span-2 lg:col-span-3"></div>
+
+<nav class="fixed w-full z-50 bg-white/90 backdrop-blur-md shadow-sm border-b border-slate-200 transition-all duration-300" id="navbar">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="flex justify-between h-16 items-center">
+            <div class="flex-shrink-0 flex items-center">
+                <a href="#home">
+                    <img id="hero-photo-nav" src="hogan-2014.jpg" alt="Hogan Shih" class="h-10 w-10 rounded-full object-cover border-2 border-secondary hover:border-primary transition-colors">
+                </a>
+            </div>
+            <div class="hidden md:block">
+                <div class="ml-10 flex items-baseline space-x-8">
+                    <a href="#about" data-i18n="nav_about" class="hover:text-secondary text-slate-600 px-3 py-2 rounded-md text-sm font-medium transition-colors">個人簡介</a>
+                    <a href="#skills" data-i18n="nav_skills" class="hover:text-secondary text-slate-600 px-3 py-2 rounded-md text-sm font-medium transition-colors">專業技能</a>
+                    <a href="#projects" data-i18n="nav_projects" class="hover:text-secondary text-slate-600 px-3 py-2 rounded-md text-sm font-medium transition-colors">專案實績</a>
+                    <a href="#experience" data-i18n="nav_experience" class="hover:text-secondary text-slate-600 px-3 py-2 rounded-md text-sm font-medium transition-colors">工作經歷</a>
+                </div>
+            </div>
+            <div class="flex items-center gap-3">
+                <div class="flex items-center text-xs font-medium gap-0.5">
+                    <button data-lang="zh" onclick="setLang('zh')" class="lang-btn active px-2 py-1 rounded">繁中</button>
+                    <span class="text-slate-300">|</span>
+                    <button data-lang="en" onclick="setLang('en')" class="lang-btn px-2 py-1 rounded">EN</button>
+                    <span class="text-slate-300">|</span>
+                    <button data-lang="ja" onclick="setLang('ja')" class="lang-btn px-2 py-1 rounded">日本語</button>
+                </div>
+                <a href="admin.html" title="後台管理" class="text-slate-400 hover:text-primary transition-colors ml-1">
+                    <i class="fas fa-cog text-sm"></i>
+                </a>
+                <button id="mobile-menu-btn" class="md:hidden text-slate-600 hover:text-primary focus:outline-none">
+                    <i class="fas fa-bars text-2xl"></i>
+                </button>
+            </div>
+        </div>
+    </div>
+    <div id="mobile-menu" class="hidden md:hidden bg-white border-t border-slate-100">
+        <div class="px-2 pt-2 pb-3 space-y-1 sm:px-3 shadow-lg">
+            <a href="#about" data-i18n="nav_about" class="mobile-link block px-3 py-2 rounded-md text-base font-medium text-slate-700 hover:text-primary hover:bg-slate-50">個人簡介</a>
+            <a href="#skills" data-i18n="nav_skills" class="mobile-link block px-3 py-2 rounded-md text-base font-medium text-slate-700 hover:text-primary hover:bg-slate-50">專業技能</a>
+            <a href="#projects" data-i18n="nav_projects" class="mobile-link block px-3 py-2 rounded-md text-base font-medium text-slate-700 hover:text-primary hover:bg-slate-50">專案實績</a>
+            <a href="#experience" data-i18n="nav_experience" class="mobile-link block px-3 py-2 rounded-md text-base font-medium text-slate-700 hover:text-primary hover:bg-slate-50">工作經歷</a>
+        </div>
+    </div>
+</nav>
+
+<section id="home" class="hero-bg text-white pt-32 pb-20 md:pt-40 md:pb-28 px-4">
+    <div class="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between">
+        <div class="md:w-2/3 md:pr-10 text-center md:text-left z-10">
+            <p data-i18n="hero_greeting" class="text-secondary font-semibold tracking-wide uppercase mb-2">Hello, I'm</p>
+            <h1 id="hero-title" class="text-4xl md:text-5xl lg:text-6xl font-bold mb-4 leading-tight">石恆文 <span id="hero-name-en" class="text-3xl md:text-4xl text-slate-300 font-light">Hogan Shih</span></h1>
+            <h2 data-i18n="hero_subtitle" class="text-xl md:text-2xl text-slate-300 mb-6 font-medium border-l-4 border-secondary pl-3 inline-block md:block">AI 網頁開發工程師 | IT 系統管理 | 資料分析</h2>
+            <p data-i18n="hero_desc" class="text-slate-400 text-lg mb-8 max-w-2xl leading-relaxed">擁有 20 年跨產業工程與資訊管理經驗，擅長將業務需求精準轉化為可維護的系統架構，兼具技術開發與跨部門溝通的軟硬實力。</p>
+            <div class="flex flex-col sm:flex-row gap-4 justify-center md:justify-start">
+                <a href="#contact" class="bg-secondary hover:bg-blue-600 text-white font-bold py-3 px-8 rounded-full transition-all duration-300 shadow-lg shadow-blue-500/30 flex items-center justify-center">
+                    <i class="fas fa-envelope mr-2"></i><span data-i18n="hero_btn_contact">聯絡我</span>
+                </a>
+                <a href="#projects" class="bg-transparent border border-slate-400 hover:border-white hover:bg-white/10 text-white font-bold py-3 px-8 rounded-full transition-all duration-300 flex items-center justify-center">
+                    <i class="fas fa-laptop-code mr-2"></i><span data-i18n="hero_btn_portfolio">查看作品</span>
+                </a>
+            </div>
+        </div>
+        <div class="md:w-1/3 mt-12 md:mt-0 flex justify-center relative">
+            <div class="relative w-64 h-64 md:w-80 md:h-80 rounded-full border-4 border-secondary/30 p-2 overflow-hidden shadow-2xl">
+                <img id="hero-photo-main" src="hogan-2014.jpg" alt="石恆文" class="w-full h-full object-cover rounded-full bg-slate-800">
+            </div>
+            <div id="hero-badge" class="absolute bottom-4 right-4 bg-white text-dark py-2 px-4 rounded-full shadow-xl font-bold flex items-center animate-bounce">
+                <i id="hero-badge-icon" class="fab fa-vuejs text-green-500 text-xl mr-2"></i>
+                <span id="hero-badge-text">Vue 3 / Nuxt</span>
+            </div>
+        </div>
+    </div>
+</section>
+
+<div id="contact" class="bg-white shadow-md relative z-20 -mt-8 mx-4 md:mx-auto max-w-5xl rounded-xl p-6 md:p-8 flex flex-wrap justify-around items-center gap-6">
+    <div class="flex items-center text-slate-600 hover:text-primary transition-colors">
+        <div class="w-12 h-12 bg-blue-50 rounded-full flex items-center justify-center text-secondary mr-4">
+            <i class="fas fa-map-marker-alt text-xl"></i>
+        </div>
+        <div>
+            <p class="text-sm text-slate-400">Location</p>
+            <p data-i18n="contact_location" class="font-medium">台北市萬華區</p>
+        </div>
+    </div>
+    <div class="flex items-center text-slate-600 hover:text-primary transition-colors">
+        <div class="w-12 h-12 bg-blue-50 rounded-full flex items-center justify-center text-secondary mr-4">
+            <i class="fas fa-phone-alt text-xl"></i>
+        </div>
+        <div>
+            <p class="text-sm text-slate-400">Phone</p>
+            <p id="contact-phone" class="font-medium">0921-898-920</p>
+        </div>
+    </div>
+    <div class="flex items-center text-slate-600 hover:text-primary transition-colors">
+        <div class="w-12 h-12 bg-blue-50 rounded-full flex items-center justify-center text-secondary mr-4">
+            <i class="fas fa-envelope text-xl"></i>
+        </div>
+        <div>
+            <p class="text-sm text-slate-400">Email</p>
+            <a id="contact-email" href="mailto:Hogan.shih@gmail.com" class="font-medium">Hogan.shih@gmail.com</a>
+        </div>
+    </div>
+</div>
+
+<section id="about" class="py-20 bg-light">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="text-center mb-16">
+            <h2 data-i18n-html="about_heading" class="text-3xl md:text-4xl font-bold text-dark mb-4">關於我 <span class="text-secondary">About Me</span></h2>
+            <div class="w-24 h-1 bg-secondary mx-auto rounded-full"></div>
+        </div>
+        <div class="bg-white rounded-2xl shadow-sm border border-slate-100 p-8 md:p-12">
+            <p data-i18n="about_p1" class="text-lg text-slate-600 leading-relaxed mb-6"></p>
+            <p data-i18n="about_p2" class="text-lg text-slate-600 leading-relaxed mb-6"></p>
+            <p data-i18n="about_p3" class="text-lg text-slate-600 leading-relaxed"></p>
+        </div>
+    </div>
+</section>
+
+<section id="skills" class="py-20 bg-white">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="text-center mb-16">
+            <h2 data-i18n-html="skills_heading" class="text-3xl md:text-4xl font-bold text-dark mb-4">專業技能 <span class="text-secondary">Core Skills</span></h2>
+            <div class="w-24 h-1 bg-secondary mx-auto rounded-full"></div>
+        </div>
+        <div id="skills-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8"></div>
+    </div>
+</section>
+
+<section id="projects" class="py-20 bg-slate-50">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="text-center mb-16">
+            <h2 data-i18n-html="projects_heading" class="text-3xl md:text-4xl font-bold text-dark mb-4">專案實績 <span class="text-secondary">Portfolio</span></h2>
+            <div class="w-24 h-1 bg-secondary mx-auto rounded-full"></div>
+            <p data-i18n="projects_sub" class="mt-4 text-slate-600 max-w-2xl mx-auto"></p>
+        </div>
+        <div id="projects-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8"></div>
+    </div>
+</section>
+
+<section id="experience" class="py-20 bg-white">
+    <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="text-center mb-16">
+            <h2 data-i18n-html="exp_heading" class="text-3xl md:text-4xl font-bold text-dark mb-4">工作經歷 <span class="text-secondary">Experience</span></h2>
+            <div class="w-24 h-1 bg-secondary mx-auto rounded-full"></div>
+        </div>
+        <div id="experience-timeline" class="relative timeline-line"></div>
+    </div>
+</section>
+
+<section class="py-20 bg-slate-50">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-12">
+            <div>
+                <h2 class="text-2xl font-bold text-dark mb-8 flex items-center">
+                    <i class="fas fa-graduation-cap text-secondary mr-3"></i>
+                    <span data-i18n="edu_heading">學歷背景</span>
+                </h2>
+                <div id="edu-list" class="space-y-6"></div>
+            </div>
+            <div>
+                <h2 class="text-2xl font-bold text-dark mb-8 flex items-center">
+                    <i class="fas fa-certificate text-secondary mr-3"></i>
+                    <span data-i18n="cert_heading">專業認證</span>
+                </h2>
+                <div class="bg-white rounded-xl shadow-sm border border-slate-100 p-6">
+                    <ul id="cert-list" class="space-y-4"></ul>
+                </div>
+                <div id="referee-box" class="mt-8"></div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<footer class="bg-dark text-white py-10">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col md:flex-row justify-between items-center">
+        <div class="mb-4 md:mb-0">
+            <span id="footer-name" class="text-2xl font-bold tracking-wider">Hogan.S</span>
+            <p data-i18n="footer_subtitle" id="footer-subtitle" class="text-slate-400 text-sm mt-1">AI 網頁開發工程師</p>
+        </div>
+        <div class="flex space-x-6 text-xl">
+            <a id="footer-email" href="mailto:Hogan.shih@gmail.com" class="text-slate-400 hover:text-white transition-colors"><i class="fas fa-envelope"></i></a>
+            <a id="footer-github" href="#" class="text-slate-400 hover:text-white transition-colors"><i class="fab fa-github"></i></a>
+            <a id="footer-linkedin" href="#" class="text-slate-400 hover:text-white transition-colors"><i class="fab fa-linkedin"></i></a>
+        </div>
+    </div>
+    <div class="text-center text-slate-500 text-sm mt-8 border-t border-slate-800 pt-8">
+        <span data-i18n="footer_copyright" id="footer-copyright">&copy; 2026 石恆文 Hogan Shih. All Rights Reserved.</span>
+    </div>
+</footer>
+
+<script>
+// ─── Default Data ──────────────────────────────────────────────────────────
+const defaultData = {
+  hero: {
+    nameZh: '石恆文', nameEn: 'Hogan Shih',
+    photo: 'hogan-2014.jpg',
+    badge: 'Vue 3 / Nuxt', badgeIcon: 'fab fa-vuejs text-green-500'
+  },
+  contact: { phone: '0921-898-920', email: 'Hogan.shih@gmail.com' },
+  skills: [
+    { id:'s1', title:'前端開發', icon:'fas fa-desktop', colorTheme:'blue', span:1,
+      tags:['Vue 3 / Nuxt 3','JavaScript','Tailwind CSS','Bootstrap','Figma / Shadcn','React'] },
+    { id:'s2', title:'後端開發', icon:'fas fa-server', colorTheme:'green', span:1,
+      tags:['PHP + Laravel 12','Node.js','Python (Django/Flask)','Express.js','RESTful API'] },
+    { id:'s3', title:'資料庫與系統架構', icon:'fas fa-database', colorTheme:'purple', span:1,
+      tags:['SQL Server','MySQL','Firebase','Linux','Git','Hadoop (HDFS/YARN)'] },
+    { id:'s4', title:'AI 輔助開發與工具', icon:'fas fa-robot', colorTheme:'yellow', span:1,
+      tags:['Claude Pro','Gemini Pro','Spec-Driven Dev','Skitich / Pencil'] },
+    { id:'s5', title:'專案管理與品保', icon:'fas fa-tasks', colorTheme:'red', span:2,
+      tags:['IPMA D 級專案管理師','ISO 9001:2015 主導稽核員','SAP ERP (PP/MM/SD)','PDM','QFD / TRIZ / SPC'] }
+  ],
+  projects: [
+    { id:'p0', title:'ESG 永續顧問網站<br>DEMO 平台',
+      gradient:'from-green-500 to-teal-600', icon:'fas fa-leaf',
+      techTags:[{text:'Nuxt.js',color:'blue'},{text:'Node.js',color:'green'},{text:'RESTful API',color:'purple'},{text:'PostgreSQL',color:'teal'}],
+      description:'為永續顧問公司建置之 ESG 官方網站與後台管理系統，整合資料庫設計與 API 架構，提供完整的內容管理功能。',
+      account:'admin@esg.com', password:'admin123456',
+      links:[{text:'前台 Demo',url:'https://esg-frontend-pied.vercel.app',style:'light'},{text:'後台 Demo',url:'https://esg-admin-backend.vercel.app/admin/login',style:'primary'}]
+    },
+    { id:'p1', title:'資源再生協會<br>網站與管理系統',
+      gradient:'from-blue-500 to-indigo-600', icon:'fas fa-recycle',
+      techTags:[{text:'Nuxt.js',color:'blue'},{text:'Node.js',color:'green'},{text:'RESTful API',color:'purple'}],
+      description:'為 RRA 資源再生協會建置之官方網站與專屬後台管理系統，提供完善的內容發布與資料管理功能。',
+      account:'jerry@rra.com', password:'admin1234',
+      links:[{text:'前台 Demo',url:'https://rra-website.vercel.app/',style:'light'},{text:'後台 Demo',url:'https://rra-website.vercel.app/admin',style:'primary'}]
+    },
+    { id:'p2', title:'鋼鐵公會統計網<br>DEMO 平台',
+      gradient:'from-slate-700 to-slate-900', icon:'fas fa-industry',
+      techTags:[{text:'Nuxt 3',color:'blue'},{text:'Laravel 12',color:'red'}],
+      description:'建構鋼鐵產業統計資料庫之展示與查詢平台，前台提供資料視覺化與搜尋，後台負責資料更新與會員權限管理。',
+      account:'admin', password:'Admin@1234',
+      links:[{text:'前台 Demo',url:'https://tsiia-web.vercel.app/',style:'light'},{text:'後台 Demo',url:'https://tsiia-web.vercel.app/login',style:'primary'}]
+    },
+    { id:'p3', title:'鋼鐵聯合會<br>公會系統 & 會籍統計',
+      gradient:'from-teal-500 to-emerald-600', icon:'fas fa-users-cog',
+      techTags:[{text:'Vue 3',color:'green'},{text:'Express/Node',color:'yellow'}],
+      description:'開發鋼鐵公會聯合會的對外網站與會籍統計管理系統，數位化整合傳統會務管理流程。',
+      account:'wsa', password:'admin1234',
+      links:[
+        {text:'聯合會前台',url:'https://steel-guild-vue.vercel.app/',style:'light'},
+        {text:'聯合會後台',url:'https://steel-guild-vue.vercel.app/admin',style:'outline'},
+        {text:'會籍統計系統 Demo',url:'https://steelmember-zeta.vercel.app/admin',style:'primary',fullWidth:true}
+      ]
+    },
+    { id:'p4', title:'海石日式料理<br>線上訂餐網',
+      gradient:'from-orange-400 to-red-500', icon:'fas fa-utensils',
+      techTags:[{text:'Vue.js',color:'green'},{text:'六角 API',color:'slate'}],
+      description:'包含完整購物車流程的電子商務 SPA (Single Page Application)，具備前台商品展示選購與後台商品庫存上架管理。',
+      account:'hogan.shih@gmail.com', password:'agl6575',
+      links:[{text:'購物車前台',url:'https://hoganstone.github.io/japanese-restaurant/#/',style:'light'},{text:'管理後台',url:'https://hoganstone.github.io/japanese-restaurant/#/admin/products',style:'primary'}]
+    }
+  ],
+  experience: [
+    { id:'e1', period:'1999 - 2018', yearsNote:'19年資歷', title:'資訊組 組長',
+      company:'台灣鋼鐵工業同業公會', contentType:'list', side:'right', dotColor:'bg-secondary',
+      content:[
+        '<span class="font-medium text-slate-700">系統重構與開發：</span>使用 .NET、PHP、JavaScript 等技術取代原 IBM AS400，獨立建構 Web 化資訊平台。',
+        '<span class="font-medium text-slate-700">創造營收：</span>規劃運作台灣原產地證明簽發系統，年收入貢獻約 200 萬元。開發付費產業統計查詢網站。',
+        '<span class="font-medium text-slate-700">IT 基礎架構管理：</span>統籌維護 Firewall、Web/Mail Server、網域及軟硬體設備。',
+        '<span class="font-medium text-slate-700">政府專案主導：</span>完成經濟部商業司 PKI 標案（約 150 萬元）。'
+      ]
+    },
+    { id:'e2', period:'1997 - 1997', yearsNote:'', title:'品保經理',
+      company:'美商捷普科技 Jabil', contentType:'text', side:'left', dotColor:'bg-slate-300',
+      content:'負責 LCD TV 產品品質驗證（DQA）與可靠度驗證（RA），涵蓋安規及 EMI 測試。維護 ISO 9000/14000 品質系統，主持跨國英文品質會議與供應商稽核管理。'
+    },
+    { id:'e3', period:'1996 - 1997', yearsNote:'', title:'視訊系統處 / 產品發展部 經理',
+      company:'瑞相科技（力晶&瑞薩合資）', contentType:'text', side:'right', dotColor:'bg-slate-300',
+      content:'主導 ATSC 數位電視 SOC 晶片及軟硬體開發設計管理。負責 IC 產品 Roadmap 規劃、處理客戶 RFI/RFQ，並協助客戶設計開發平台導入量產。'
+    },
+    { id:'e4', period:'1986 - 1996', yearsNote:'早期重要經歷', title:'研發 / 專案 / 產銷主管',
+      company:'', contentType:'companies', side:'left', dotColor:'bg-slate-300',
+      content:[
+        '<span class="font-semibold">智邦科技：</span>專案經理 (WiFi/Bluetooth/WiMAX 開發)',
+        '<span class="font-semibold">廣輝電子(友達)：</span>專案副理 (六代廠 LCD-TV 新產品開發)',
+        '<span class="font-semibold">瀚宇彩晶：</span>試產線主管 / 客戶品質服務副理',
+        '<span class="font-semibold">精英電腦 / 力太電子：</span>製程工程師 / 生管課長'
+      ]
+    }
+  ],
+  education: [
+    { id:'ed1', school:'國立台北科技大學', degree:'工業工程與管理研究所 (碩士)', year:'2009.06' },
+    { id:'ed2', school:'義守大學', degree:'工業工程管理系 (學士)', year:'1997.06' }
+  ],
+  certifications: [
+    { id:'c1', text:'Microsoft Python 微軟認證' },
+    { id:'c2', text:'Google Gemini AI 專業教育認證' },
+    { id:'c3', text:'IPMA D 級專案管理師' },
+    { id:'c4', text:'SGS / AFNOR ISO 9001:2015 主導稽核員' }
+  ],
+  referee: { name:'黃孝信', role:'台灣資源再生協會 前理事長' },
+  footer: {
+    name:'Hogan.S', email:'Hogan.shih@gmail.com',
+    githubUrl:'#', linkedinUrl:'#'
+  }
+};
+
+// ─── Load / Merge Data ─────────────────────────────────────────────────────
+function loadData() {
+  try {
+    const saved = localStorage.getItem('hogan_cv_data');
+    if (saved) {
+      const parsed = JSON.parse(saved);
+      return deepMerge(defaultData, parsed);
+    }
+  } catch(e) {}
+  return JSON.parse(JSON.stringify(defaultData));
+}
+
+function deepMerge(base, override) {
+  const result = JSON.parse(JSON.stringify(base));
+  for (const key in override) {
+    if (Array.isArray(override[key])) {
+      result[key] = override[key];
+    } else if (typeof override[key] === 'object' && override[key] !== null) {
+      result[key] = deepMerge(base[key] || {}, override[key]);
+    } else {
+      result[key] = override[key];
+    }
+  }
+  return result;
+}
+
+// ─── Helpers ───────────────────────────────────────────────────────────────
+function onImgError(img, gradient) {
+  img.parentElement.style.background = '';
+  img.parentElement.classList.add('bg-gradient-to-br', ...gradient.split(' '));
+  img.remove();
+}
+
+// ─── Render Functions ──────────────────────────────────────────────────────
+const colorBgMap = {
+  blue:   'bg-blue-100 text-blue-600 group-hover:bg-blue-600',
+  green:  'bg-green-100 text-green-600 group-hover:bg-green-600',
+  purple: 'bg-purple-100 text-purple-600 group-hover:bg-purple-600',
+  yellow: 'bg-yellow-100 text-yellow-600 group-hover:bg-yellow-600',
+  red:    'bg-red-100 text-red-600 group-hover:bg-red-600',
+  teal:   'bg-teal-100 text-teal-600 group-hover:bg-teal-600',
+};
+const tagColorMap = {
+  blue:'bg-blue-100 text-blue-700', green:'bg-green-100 text-green-700',
+  purple:'bg-purple-100 text-purple-700', red:'bg-red-100 text-red-700',
+  yellow:'bg-yellow-100 text-yellow-700', slate:'bg-slate-100 text-slate-700',
+  teal:'bg-teal-100 text-teal-700',
+};
+
+function renderSkills(skills) {
+  document.getElementById('skills-grid').innerHTML = skills.map(s => {
+    const iconClass = colorBgMap[s.colorTheme] || colorBgMap.blue;
+    const spanClass = s.span > 1 ? ` lg:col-span-${s.span}` : '';
+    return `<div class="bg-slate-50 rounded-xl p-8 border border-slate-100 hover:shadow-lg transition-shadow duration-300 group${spanClass}">
+      <div class="w-14 h-14 ${iconClass} rounded-lg flex items-center justify-center text-2xl mb-6 group-hover:text-white transition-colors">
+        <i class="${s.icon}"></i>
+      </div>
+      <h3 class="text-xl font-bold text-dark mb-4">${s.title}</h3>
+      <div class="flex flex-wrap gap-2">
+        ${s.tags.map(t=>`<span class="px-3 py-1 bg-white border border-slate-200 rounded-full text-sm font-medium text-slate-600 shadow-sm">${t}</span>`).join('')}
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function renderProjects(projects) {
+  document.getElementById('projects-grid').innerHTML = projects.map(p => {
+    const linksHtml = p.links.map(l => {
+      const base = l.fullWidth ? 'w-full' : 'flex-1';
+      const style = l.style === 'primary'
+        ? 'bg-secondary hover:bg-blue-600 text-white'
+        : l.style === 'outline'
+        ? 'border border-slate-200 hover:bg-slate-50 text-slate-700'
+        : 'bg-slate-100 hover:bg-slate-200 text-slate-700';
+      return `<a href="${l.url}" target="_blank" rel="noopener noreferrer" class="${base} text-center ${style} text-sm font-medium py-2 px-4 rounded transition-colors">${l.text}</a>`;
+    });
+
+    const hasFullWidth = p.links.some(l => l.fullWidth);
+    const linksContainer = hasFullWidth
+      ? `<div class="flex flex-col gap-2"><div class="flex gap-2">${linksHtml.filter((_,i)=>!p.links[i].fullWidth).join('')}</div>${linksHtml.filter((_,i)=>p.links[i].fullWidth).join('')}</div>`
+      : `<div class="flex gap-2">${linksHtml.join('')}</div>`;
+
+    const tagsHtml = p.techTags.map(t=>`<span class="text-xs font-semibold ${tagColorMap[t.color]||tagColorMap.slate} px-2 py-1 rounded">${t.text}</span>`).join('');
+
+    const cardHeader = p.image
+      ? `<div style="height:192px;position:relative;overflow:hidden;background:#1e293b;">
+          <img src="${p.image}" alt="" style="width:100%;height:192px;object-fit:cover;display:block;" onerror="onImgError(this,'${p.gradient}')">
+          <div style="position:absolute;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.48);display:flex;align-items:center;justify-content:center;">
+            <h3 style="color:#fff;font-size:1.4rem;font-weight:700;text-align:center;padding:0 1rem;line-height:1.4;text-shadow:0 2px 8px rgba(0,0,0,0.5);">${p.title}</h3>
+          </div>
+        </div>`
+      : `<div class="h-48 bg-gradient-to-br ${p.gradient} flex items-center justify-center text-white relative">
+          <i class="${p.icon} text-6xl opacity-20 absolute"></i>
+          <h3 class="text-2xl font-bold z-10 text-center px-4 drop-shadow-md">${p.title}</h3>
+        </div>`;
+
+    return `<div class="bg-white rounded-xl shadow-md overflow-hidden hover:-translate-y-2 transition-transform duration-300 flex flex-col border border-slate-100">
+      ${cardHeader}
+      <div class="px-6 pt-6 pb-4 flex-grow">
+        <div class="flex flex-wrap gap-2 mb-4">${tagsHtml}</div>
+        <p class="text-slate-600 text-sm">${p.description}</p>
+      </div>
+      ${(p.account||p.password) ? `<div class="px-6 pb-4">
+        <div class="bg-slate-50 border border-slate-200 rounded-lg px-4 py-3 text-xs text-slate-600 space-y-1">
+          ${p.account ? `<div class="flex items-center gap-2"><i class="fas fa-user w-3 text-slate-400"></i><span class="font-medium text-slate-500">帳號：</span>${p.account}</div>` : ''}
+          ${p.password ? `<div class="flex items-center gap-2"><i class="fas fa-key w-3 text-slate-400"></i><span class="font-medium text-slate-500">密碼：</span>${p.password}</div>` : ''}
+        </div>
+      </div>` : ''}
+      <div class="px-6 pb-6 pt-0">
+        ${linksContainer}
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function renderExperience(experience) {
+  document.getElementById('experience-timeline').innerHTML = experience.map(e => {
+    const isRight = e.side !== 'left';
+    const flexClass = isRight ? '' : 'flex-row-reverse';
+    const dateClass = isRight ? 'text-right pr-8' : 'text-left pl-8';
+    const contentClass = isRight ? 'md:pl-8' : 'md:pr-8 text-left md:text-right';
+
+    let bodyHtml = '';
+    if (e.contentType === 'list') {
+      bodyHtml = `<ul class="list-disc list-inside text-sm text-slate-600 space-y-2">${(e.content||[]).map(i=>`<li>${i}</li>`).join('')}</ul>`;
+    } else if (e.contentType === 'companies') {
+      bodyHtml = (e.content||[]).map(i=>`<p class="text-sm text-slate-600 mb-1">${i}</p>`).join('');
+    } else {
+      bodyHtml = `<p class="text-sm text-slate-600 leading-relaxed">${e.content||''}</p>`;
+    }
+
+    return `<div class="relative pl-8 md:pl-0 mb-12">
+      <div class="md:flex items-center justify-between w-full ${flexClass}">
+        <div class="hidden md:block w-5/12 ${dateClass}">
+          <span class="text-secondary font-bold text-lg">${e.period}</span>
+          ${e.yearsNote?`<p class="text-slate-500 font-medium">${e.yearsNote}</p>`:''}
+        </div>
+        <div class="absolute left-0 md:left-1/2 w-6 h-6 rounded-full ${e.dotColor||'bg-slate-300'} border-4 border-white shadow -translate-x-[11px] md:-translate-x-1/2 mt-1.5 md:mt-0 z-10"></div>
+        <div class="w-full md:w-5/12 ${contentClass}">
+          <div class="bg-slate-50 p-6 rounded-xl border border-slate-100 shadow-sm hover:shadow-md transition-shadow">
+            <div class="md:hidden text-secondary font-bold text-sm mb-2">${e.period}</div>
+            <h3 class="text-xl font-bold text-dark">${e.title}</h3>
+            ${e.company?`<h4 class="text-lg text-slate-600 mb-3">${e.company}</h4>`:'<div class="mb-3"></div>'}
+            ${bodyHtml}
+          </div>
+        </div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function renderEducation(education) {
+  document.getElementById('edu-list').innerHTML = education.map(e=>`
+    <div class="bg-white p-6 rounded-xl shadow-sm border border-slate-100 flex items-start">
+      <div class="bg-blue-100 text-blue-600 p-3 rounded-lg mr-4 flex-shrink-0">
+        <i class="fas fa-university text-xl"></i>
+      </div>
+      <div>
+        <h3 class="font-bold text-lg text-dark">${e.school}</h3>
+        <p class="text-slate-600">${e.degree}</p>
+        <p class="text-slate-400 text-sm mt-1">${e.year}</p>
+      </div>
+    </div>`).join('');
+}
+
+function renderCertifications(certs) {
+  document.getElementById('cert-list').innerHTML = certs.map(c=>`
+    <li class="flex items-center text-slate-700">
+      <i class="fas fa-check-circle text-green-500 mr-3 text-lg"></i>
+      <span class="font-medium">${c.text}</span>
+    </li>`).join('');
+}
+
+function renderReferee(referee) {
+  document.getElementById('referee-box').innerHTML = `
+    <div class="mt-8 bg-blue-50 border border-blue-100 rounded-xl p-6 flex items-start">
+      <i class="fas fa-quote-left text-blue-300 text-2xl mr-4 mt-1"></i>
+      <div>
+        <h4 data-i18n="referee_title" class="font-bold text-dark text-lg mb-1">推薦人</h4>
+        <p>
+          <span class="text-slate-700">${referee.name}</span>
+          <span class="text-sm text-slate-500 ml-2">${referee.role}</span>
+        </p>
+      </div>
+    </div>`;
+}
+
+function applyHeroAndFooter(data) {
+  const h = data.hero;
+  document.getElementById('hero-title').innerHTML = `${h.nameZh} <span id="hero-name-en" class="text-3xl md:text-4xl text-slate-300 font-light">${h.nameEn}</span>`;
+  const photo = h.photo || 'hogan-2014.jpg';
+  document.getElementById('hero-photo-main').src = photo;
+  document.getElementById('hero-photo-nav').src = photo;
+  document.getElementById('hero-badge-text').textContent = h.badge;
+  const parts = h.badgeIcon.split(' ');
+  const iconEl = document.getElementById('hero-badge-icon');
+  iconEl.className = parts.join(' ') + ' text-xl mr-2';
+
+  const c = data.contact;
+  document.getElementById('contact-phone').textContent = c.phone;
+  document.getElementById('contact-email').href = 'mailto:' + c.email;
+  document.getElementById('contact-email').textContent = c.email;
+
+  const f = data.footer;
+  document.getElementById('footer-name').textContent = f.name;
+  document.getElementById('footer-email').href = 'mailto:' + f.email;
+  document.getElementById('footer-github').href = f.githubUrl || '#';
+  document.getElementById('footer-linkedin').href = f.linkedinUrl || '#';
+}
+
+// ─── i18n ──────────────────────────────────────────────────────────────────
+const i18n = {
+  zh: {
+    nav_about:'個人簡介', nav_skills:'專業技能', nav_projects:'專案實績', nav_experience:'工作經歷',
+    hero_greeting:"Hello, I'm",
+    hero_subtitle:'AI 網頁開發工程師 | IT 系統管理 | 資料分析',
+    hero_desc:'擁有 20 年跨產業工程與資訊管理經驗，擅長將業務需求精準轉化為可維護的系統架構，兼具技術開發與跨部門溝通的軟硬實力。',
+    hero_btn_contact:'聯絡我', hero_btn_portfolio:'查看作品',
+    contact_location:'台北市萬華區',
+    about_heading:'關於我 <span class="text-secondary">About Me</span>',
+    about_p1:'擁有 20 年跨產業工程與資訊管理經驗，近年深耕AI網頁開發，具備 Vue 3 / Nuxt、PHP+Laravel、Python (Django/Flask) 完整前後端開發能力。',
+    about_p2:'曾獨立設計並上線鋼鐵產業統計付費平台，整合 SQL Server 資料庫與公會原產地證明系統，年收入貢獻超過 200 萬。我擅長將複雜的業務邏輯與流程，轉化為直覺、高效且可維護的數位系統架構。',
+    about_p3:'在 AI 工具快速發展的環境下，我積極導入 Spec-Driven Development (SDD) 開發模式，透過 Claude、Gemini 等 AI 助手輔助，結合 UI 快速原型設計，大幅提升前後台系統建構的效率。此外，具備豐富的專案管理與 ISO 9001 品質稽核經驗，能有效進行跨部門溝通與資源協調。',
+    skills_heading:'專業技能 <span class="text-secondary">Core Skills</span>',
+    projects_heading:'專案實績 <span class="text-secondary">Portfolio</span>',
+    projects_sub:'點擊按鈕可直接檢視前台或後台 Demo 系統。這些系統展示了從前端切版、API 串接到資料庫設計的完整開發能力。',
+    exp_heading:'工作經歷 <span class="text-secondary">Experience</span>',
+    edu_heading:'學歷背景', cert_heading:'專業認證',
+    referee_title:'推薦人',
+    footer_subtitle:'AI 網頁開發工程師',
+    footer_copyright:'© 2026 石恆文 Hogan Shih. All Rights Reserved.',
+  },
+  en: {
+    nav_about:'About', nav_skills:'Skills', nav_projects:'Portfolio', nav_experience:'Experience',
+    hero_greeting:"Hello, I'm",
+    hero_subtitle:'Full-Stack AI Web Developer | IT Systems Management | Data Analytics',
+    hero_desc:'20 years of cross-industry engineering and IT management experience. Skilled at translating business requirements into maintainable system architectures.',
+    hero_btn_contact:'Contact Me', hero_btn_portfolio:'View Portfolio',
+    contact_location:'Wanhua District, Taipei',
+    about_heading:'About <span class="text-secondary">Me</span>',
+    about_p1:'With 20 years of cross-industry engineering and IT management experience, I have recently focused on full-stack AI web development, with complete capabilities in Vue 3 / Nuxt, PHP+Laravel, and Python (Django/Flask).',
+    about_p2:"I independently designed and launched a paid statistics platform for the steel industry, integrating SQL Server with the association's certificate-of-origin system, contributing over TWD 2 million in annual revenue.",
+    about_p3:'In the rapidly evolving AI landscape, I actively adopt Spec-Driven Development (SDD), leveraging AI assistants like Claude and Gemini combined with rapid UI prototyping to significantly boost development efficiency.',
+    skills_heading:'Core <span class="text-secondary">Skills</span>',
+    projects_heading:'My <span class="text-secondary">Portfolio</span>',
+    projects_sub:'Click the buttons to view the frontend or backend demo systems. These projects showcase complete development capabilities from UI implementation to database design.',
+    exp_heading:'Work <span class="text-secondary">Experience</span>',
+    edu_heading:'Education', cert_heading:'Certifications',
+    referee_title:'Referee',
+    footer_subtitle:'Full-Stack AI Web Developer',
+    footer_copyright:'© 2026 Hogan Shih. All Rights Reserved.',
+  },
+  ja: {
+    nav_about:'プロフィール', nav_skills:'スキル', nav_projects:'ポートフォリオ', nav_experience:'職歴',
+    hero_greeting:'はじめまして、',
+    hero_subtitle:'フルスタック AI ウェブ開発者 | IT システム管理 | データ分析',
+    hero_desc:'20年にわたる異業種エンジニアリングおよびIT管理経験を持ち、ビジネス要件を保守可能なシステムアーキテクチャへ精確に転換することを得意とします。',
+    hero_btn_contact:'お問い合わせ', hero_btn_portfolio:'作品を見る',
+    contact_location:'台北市万華区',
+    about_heading:'私について <span class="text-secondary">About Me</span>',
+    about_p1:'20年にわたる異業種エンジニアリングとIT管理の経験を持ち、近年はフルスタックAIウェブ開発に注力。Vue 3 / Nuxt、PHP+Laravel、Python（Django/Flask）による完全なフロントエンド・バックエンド開発能力を備えています。',
+    about_p2:'鉄鋼業界向けの有料統計プラットフォームを独自に設計・公開し、SQL ServerとCertificate of Origin発行システムを統合することで、年間200万台湾ドル以上の収益に貢献。',
+    about_p3:'AIツールが急速に進化する中、Spec-Driven Development（SDD）を積極的に導入し、ClaudeやGeminiなどのAIアシスタントとUIの迅速なプロトタイピングを組み合わせることでシステム開発効率を大幅に向上させています。',
+    skills_heading:'スキル <span class="text-secondary">Core Skills</span>',
+    projects_heading:'ポートフォリオ <span class="text-secondary">Portfolio</span>',
+    projects_sub:'ボタンをクリックして、フロントエンドまたはバックエンドのデモをご覧ください。',
+    exp_heading:'職歴 <span class="text-secondary">Experience</span>',
+    edu_heading:'学歴', cert_heading:'資格・認定',
+    referee_title:'推薦者',
+    footer_subtitle:'フルスタック AI ウェブ開発者',
+    footer_copyright:'© 2026 石恆文 Hogan Shih. All Rights Reserved.',
+  }
+};
+
+const langMeta = { zh:'zh-TW', en:'en', ja:'ja' };
+
+function applyI18nOverrides(data) {
+  // Apply zh text overrides from data
+  const zh = data.i18nZh || {};
+  Object.keys(zh).forEach(k => { if (zh[k]) i18n.zh[k] = zh[k]; });
+}
+
+function setLang(lang) {
+  const t = i18n[lang];
+  if (!t) return;
+  document.documentElement.lang = langMeta[lang];
+  const titles = { zh:'石恆文 Hogan Shih | AI 網頁開發工程師', en:'Hogan Shih | Full-Stack AI Web Developer', ja:'石恆文 Hogan Shih | フルスタック AI ウェブ開発者' };
+  document.title = titles[lang];
+  document.querySelectorAll('[data-i18n]').forEach(el => {
+    const key = el.getAttribute('data-i18n');
+    if (t[key] !== undefined) el.textContent = t[key];
+  });
+  document.querySelectorAll('[data-i18n-html]').forEach(el => {
+    const key = el.getAttribute('data-i18n-html');
+    if (t[key] !== undefined) el.innerHTML = t[key];
+  });
+  document.querySelectorAll('.lang-btn').forEach(btn => {
+    btn.classList.toggle('active', btn.getAttribute('data-lang') === lang);
+  });
+  localStorage.setItem('lang', lang);
+}
+
+// Mobile menu
+document.getElementById('mobile-menu-btn').addEventListener('click', () =>
+  document.getElementById('mobile-menu').classList.toggle('hidden'));
+document.querySelectorAll('.mobile-link').forEach(l =>
+  l.addEventListener('click', () => document.getElementById('mobile-menu').classList.add('hidden')));
+
+// Navbar scroll
+window.addEventListener('scroll', () => {
+  const nav = document.getElementById('navbar');
+  nav.classList.toggle('shadow-md', window.scrollY > 10);
+  nav.classList.toggle('shadow-sm', window.scrollY <= 10);
+});
+
+// ─── Init ──────────────────────────────────────────────────────────────────
+const cvData = loadData();
+applyI18nOverrides(cvData);
+applyHeroAndFooter(cvData);
+renderSkills(cvData.skills);
+renderProjects(cvData.projects.filter(p => p.visible !== false));
+renderExperience(cvData.experience);
+renderEducation(cvData.education);
+renderCertifications(cvData.certifications);
+renderReferee(cvData.referee);
+
+const savedLang = localStorage.getItem('lang') || 'zh';
+setLang(savedLang);
+
+// ─── GSAP Animations ───────────────────────────────────────────────────────
+gsap.registerPlugin(ScrollTrigger);
+
+function scrollFade(selector, vars) {
+  gsap.utils.toArray(selector).forEach(el => {
+    gsap.from(el, Object.assign({ opacity: 0, duration: 0.7, ease: 'power2.out',
+      scrollTrigger: { trigger: el, start: 'top 88%', once: true }
+    }, vars));
+  });
+}
+
+// Hero (no ScrollTrigger — immediate on load)
+gsap.from('#home .md\\:w-2\\/3', { opacity: 0, y: 50, duration: 0.9, ease: 'power3.out', delay: 0.15 });
+gsap.from('#home .md\\:w-1\\/3', { opacity: 0, x: 60, duration: 0.9, ease: 'power3.out', delay: 0.4 });
+
+// Contact bar
+scrollFade('#contact > div', { y: 30, stagger: 0.15 });
+
+// Section headings only (not siblings)
+scrollFade('#about .text-center.mb-16, #skills .text-center.mb-16, #projects .text-center.mb-16, #experience .text-center.mb-16', { y: 25 });
+
+// About content
+scrollFade('#about .rounded-2xl', { y: 35 });
+
+// Skills cards (stagger)
+ScrollTrigger.create({
+  trigger: '#skills-grid', start: 'top 85%', once: true,
+  onEnter: () => gsap.from('#skills-grid > div', { opacity: 0, y: 50, duration: 0.6, stagger: 0.1, ease: 'power2.out' })
+});
+
+// Project cards (stagger)
+ScrollTrigger.create({
+  trigger: '#projects-grid', start: 'top 85%', once: true,
+  onEnter: () => gsap.from('#projects-grid > div', { opacity: 0, y: 60, duration: 0.65, stagger: 0.09, ease: 'power2.out' })
+});
+
+// Experience timeline (stagger)
+ScrollTrigger.create({
+  trigger: '#experience-timeline', start: 'top 85%', once: true,
+  onEnter: () => gsap.from('#experience-timeline > div', { opacity: 0, y: 40, duration: 0.65, stagger: 0.12, ease: 'power2.out' })
+});
+
+// Education & Certification
+scrollFade('#edu-list > div', { x: -30 });
+scrollFade('#cert-list > li', { x: 30 });
+</script>
+</body>
+</html>
