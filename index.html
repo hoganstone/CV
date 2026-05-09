@@ -131,7 +131,7 @@
             <p data-i18n="contact_location" class="font-medium">台北市萬華區</p>
         </div>
     </div>
-    <div class="flex items-center text-slate-600 hover:text-primary transition-colors">
+    <div id="contact-phone-wrap" class="flex items-center text-slate-600 hover:text-primary transition-colors">
         <div class="w-12 h-12 bg-blue-50 rounded-full flex items-center justify-center text-secondary mr-4">
             <i class="fas fa-phone-alt text-xl"></i>
         </div>
@@ -560,6 +560,7 @@ function applyHeroAndFooter(data) {
 
   const c = data.contact;
   document.getElementById('contact-phone').textContent = c.phone;
+  document.getElementById('contact-phone-wrap').style.display = c.showPhone === false ? 'none' : '';
   document.getElementById('contact-email').href = 'mailto:' + c.email;
   document.getElementById('contact-email').textContent = c.email;
 

@@ -157,7 +157,14 @@
           <h3 class="font-bold text-slate-700 mb-4 pb-2 border-b">聯絡資訊</h3>
           <div class="grid grid-cols-2 gap-4">
             <div class="field-group"><label>地點（中文）</label><input type="text" id="contact-location"></div>
-            <div class="field-group"><label>電話</label><input type="text" id="contact-phone"></div>
+            <div class="field-group">
+            <label>電話</label>
+            <input type="text" id="contact-phone">
+            <label class="flex items-center gap-2 mt-2 cursor-pointer" style="font-weight:400;">
+              <input type="checkbox" id="contact-show-phone">
+              <span style="font-size:13px;color:#6b7280;">前台顯示電話</span>
+            </label>
+          </div>
           </div>
           <div class="field-group"><label>Email</label><input type="text" id="contact-email-val"></div>
         </div>
@@ -439,6 +446,7 @@ function loadHeroPanel() {
   document.getElementById('hero-desc').value = i.hero_desc || '';
   document.getElementById('contact-location').value = i.contact_location || '';
   document.getElementById('contact-phone').value = c.phone || '';
+  document.getElementById('contact-show-phone').checked = c.showPhone !== false;
   document.getElementById('contact-email-val').value = c.email || '';
   if (h.photo) updatePhotoPreview(h.photo);
 }
@@ -475,7 +483,8 @@ function saveSection(section) {
     cvData.i18nZh.contact_location = document.getElementById('contact-location').value;
     cvData.contact = {
       phone: document.getElementById('contact-phone').value,
-      email: document.getElementById('contact-email-val').value
+      email: document.getElementById('contact-email-val').value,
+      showPhone: document.getElementById('contact-show-phone').checked
     };
   } else if (section === 'about') {
     if (!cvData.i18nZh) cvData.i18nZh = {};
