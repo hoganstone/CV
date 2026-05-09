@@ -400,15 +400,6 @@ function migrateProjects() {
       if (!existing.password && dp.password) existing.password = dp.password;
     }
   });
-  // Sort projects to match defaultData order, extra saved projects go at end
-  const defaultOrder = defaultData.projects.map(p => p.id);
-  cvData.projects.sort((a, b) => {
-    const ai = defaultOrder.indexOf(a.id), bi = defaultOrder.indexOf(b.id);
-    if (ai === -1 && bi === -1) return 0;
-    if (ai === -1) return 1;
-    if (bi === -1) return -1;
-    return ai - bi;
-  });
 }
 
 function saveCvData() {
@@ -431,6 +422,7 @@ function showSection(name) {
   document.querySelectorAll('.sidebar-link').forEach(l => l.classList.remove('active'));
   document.getElementById('panel-' + name).classList.add('active');
   document.querySelector(`[data-section="${name}"]`).classList.add('active');
+  localStorage.setItem('cv_admin_section', name);
 }
 
 // ─── Hero ──────────────────────────────────────────────────────────────────
@@ -1152,6 +1144,8 @@ function initAllPanels() {
 function initAdmin() {
   loadCvData();
   initAllPanels();
+  const savedSection = localStorage.getItem('cv_admin_section');
+  if (savedSection) showSection(savedSection);
 }
 
 // Check session on load
