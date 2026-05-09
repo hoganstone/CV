@@ -220,6 +220,19 @@
     </div>
 </section>
 
+<section id="courses-section" class="py-16 bg-white">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="text-center mb-10">
+            <h2 class="text-2xl font-bold text-dark mb-2 flex items-center justify-center gap-3">
+                <i class="fas fa-chalkboard-teacher text-secondary"></i>
+                <span>進修課程</span>
+            </h2>
+            <div class="w-16 h-1 bg-secondary mx-auto rounded-full"></div>
+        </div>
+        <div id="courses-list" class="grid grid-cols-1 md:grid-cols-2 gap-6"></div>
+    </div>
+</section>
+
 <footer class="bg-dark text-white py-10">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col md:flex-row justify-between items-center">
         <div class="mb-4 md:mb-0">
@@ -338,6 +351,10 @@ const defaultData = {
     { id:'c4', text:'SGS / AFNOR ISO 9001:2015 主導稽核員' }
   ],
   referee: { name:'黃孝信', role:'台灣資源再生協會 前理事長' },
+  courses: [
+    { id:'co1', category:'全端／前端開發（2018－至今）', content:'六角學院前端全部課程（Vue 實戰班）、Hiskio Vue 3 專業職人、Nuxt 3\nPHP + Laravel 12 電商平台實戰、Django + Flask Python 後端開發、Python 網路爬蟲、R 語言大數據分析、Hadoop 系統建置、物聯網樹莓派應用、Docker、AI 機器學習' },
+    { id:'co2', category:'系統／網路／程式（2006－2018）', content:'電子電力人才養成班、微波通訊工程、Wireshark TCP/IP 網路剖析\nC/C++ 程式設計、Linux 系統建置、Android 手機程式開發、PHP-MySQL 網路程式設計\n產業分析師實戰班、CRM 與 ERP、QFD、TRIZ、全球運籌管理、RFID 應用' }
+  ],
   footer: {
     name:'Hogan.S', email:'Hogan.shih@gmail.com',
     githubUrl:'#', linkedinUrl:'#'
@@ -547,6 +564,21 @@ function renderReferee(referee) {
     </div>`;
 }
 
+function renderCourses(courses) {
+  const section = document.getElementById('courses-section');
+  const container = document.getElementById('courses-list');
+  if (!courses || !courses.length) { if (section) section.style.display = 'none'; return; }
+  if (section) section.style.display = '';
+  container.innerHTML = courses.map(c => `
+    <div class="bg-slate-50 rounded-xl p-6 border border-slate-100 shadow-sm">
+      <h4 class="font-bold text-dark mb-3 flex items-center gap-2">
+        <i class="fas fa-book-open text-secondary text-sm"></i>
+        ${c.category}
+      </h4>
+      <p class="text-slate-600 text-sm leading-relaxed" style="white-space:pre-line">${c.content}</p>
+    </div>`).join('');
+}
+
 function applyHeroAndFooter(data) {
   const h = data.hero;
   document.getElementById('hero-title').innerHTML = `${h.nameZh} <span id="hero-name-en" class="text-3xl md:text-4xl text-slate-300 font-light">${h.nameEn}</span>`;
@@ -687,6 +719,7 @@ renderExperience(cvData.experience);
 renderEducation(cvData.education);
 renderCertifications(cvData.certifications);
 renderReferee(cvData.referee);
+renderCourses(cvData.courses);
 
 const savedLang = localStorage.getItem('lang') || 'zh';
 setLang(savedLang);

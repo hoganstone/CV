@@ -239,6 +239,13 @@
           </div>
           <div id="cert-admin-list" class="space-y-2"></div>
         </div>
+        <div class="bg-white rounded-xl p-6 shadow-sm border border-slate-100 mb-4">
+          <div class="flex items-center justify-between mb-4">
+            <h3 class="font-bold text-slate-700">進修課程</h3>
+          </div>
+          <div id="courses-admin-list" class="space-y-4"></div>
+          <button class="btn btn-ghost w-full mt-3 text-sm" onclick="addCourse()"><i class="fas fa-plus mr-2"></i>新增進修課程</button>
+        </div>
         <div class="bg-white rounded-xl p-6 shadow-sm border border-slate-100">
           <h3 class="font-bold text-slate-700 mb-4">推薦人</h3>
           <div class="grid grid-cols-2 gap-4">
@@ -377,6 +384,10 @@ const defaultData = {
     { id:'c4', text:'SGS / AFNOR ISO 9001:2015 主導稽核員' }
   ],
   referee: { name:'黃孝信', role:'台灣資源再生協會 前理事長' },
+  courses: [
+    { id:'co1', category:'全端／前端開發（2018－至今）', content:'六角學院前端全部課程（Vue 實戰班）、Hiskio Vue 3 專業職人、Nuxt 3\nPHP + Laravel 12 電商平台實戰、Django + Flask Python 後端開發、Python 網路爬蟲、R 語言大數據分析、Hadoop 系統建置、物聯網樹莓派應用、Docker、AI 機器學習' },
+    { id:'co2', category:'系統／網路／程式（2006－2018）', content:'電子電力人才養成班、微波通訊工程、Wireshark TCP/IP 網路剖析\nC/C++ 程式設計、Linux 系統建置、Android 手機程式開發、PHP-MySQL 網路程式設計\n產業分析師實戰班、CRM 與 ERP、QFD、TRIZ、全球運籌管理、RFID 應用' }
+  ],
   footer: { name:'Hogan.S', email:'Hogan.shih@gmail.com', githubUrl:'#', linkedinUrl:'#' }
 };
 
@@ -500,6 +511,7 @@ function saveSection(section) {
   } else if (section === 'education') {
     cvData.education = collectEducation();
     cvData.certifications = collectCertifications();
+    cvData.courses = collectCourses();
     cvData.referee = {
       name: document.getElementById('referee-name').value,
       role: document.getElementById('referee-role').value
@@ -1042,6 +1054,7 @@ function collectExperience() { return cvData.experience; }
 function loadEducationPanel() {
   renderEduAdminList();
   renderCertAdminList();
+  renderCoursesAdminList();
   const r = cvData.referee || {};
   document.getElementById('referee-name').value = r.name || '';
   document.getElementById('referee-role').value = r.role || '';
@@ -1112,6 +1125,51 @@ function collectCertifications() {
     return c;
   });
 }
+
+// ─── Courses ───────────────────────────────────────────────────────────────
+function renderCoursesAdminList() {
+  const container = document.getElementById('courses-admin-list');
+  const courses = cvData.courses || [];
+  if (!courses.length) {
+    container.innerHTML = '<p class="text-slate-400 text-sm text-center py-2">尚無進修課程</p>';
+    return;
+  }
+  container.innerHTML = courses.map((c, i) => `
+    <div class="border border-slate-200 rounded-lg p-4 space-y-3">
+      <div class="flex items-center justify-between">
+        <span class="w-6 h-6 bg-blue-100 text-blue-600 rounded-full text-xs font-bold flex items-center justify-center">${i+1}</span>
+        <button class="btn btn-danger text-xs" onclick="deleteCourse('${c.id}')"><i class="fas fa-trash"></i></button>
+      </div>
+      <div class="field-group" style="margin-bottom:0">
+        <label>課程分類名稱</label>
+        <input type="text" value="${(c.category||'').replace(/"/g,'&quot;')}" onchange="updateCourseField('${c.id}','category',this.value)">
+      </div>
+      <div class="field-group" style="margin-bottom:0">
+        <label>課程內容（可換行）</label>
+        <textarea rows="4" onchange="updateCourseField('${c.id}','content',this.value)">${c.content||''}</textarea>
+      </div>
+    </div>`).join('');
+}
+
+function addCourse() {
+  if (!cvData.courses) cvData.courses = [];
+  cvData.courses.push({ id: uid(), category: '', content: '' });
+  renderCoursesAdminList();
+}
+
+function deleteCourse(id) {
+  if (!confirm('確定刪除此進修課程？')) return;
+  cvData.courses = (cvData.courses || []).filter(c => c.id !== id);
+  saveCvData();
+  renderCoursesAdminList();
+}
+
+function updateCourseField(id, field, value) {
+  const c = (cvData.courses || []).find(c => c.id === id);
+  if (c) c[field] = value;
+}
+
+function collectCourses() { return cvData.courses || []; }
 
 // ─── Other ─────────────────────────────────────────────────────────────────
 function loadOtherPanel() {
