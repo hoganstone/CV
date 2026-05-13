@@ -362,6 +362,8 @@ const defaultData = {
   ],
   projects: [
     { id:'p0', title:'ESG 永續顧問網站<br>DEMO 平台', gradient:'from-green-500 to-teal-600', icon:'fas fa-leaf', techTags:[{text:'Nuxt.js',color:'blue'},{text:'Node.js',color:'green'},{text:'RESTful API',color:'purple'},{text:'PostgreSQL',color:'teal'}], description:'為永續顧問公司建置之 ESG 官方網站與後台管理系統，整合資料庫設計與 API 架構，提供完整的內容管理功能。', account:'admin@esg.com', password:'admin123456', links:[{text:'前台 Demo',url:'https://esg-frontend-pied.vercel.app',style:'light'},{text:'後台 Demo',url:'https://esg-admin-backend.vercel.app/admin/login',style:'primary'}] },
+    { id:'_dkl0tvft2', title:'ISO 文件簽核管理系統（Demo）', gradient:'from-blue-500 to-indigo-600', icon:'fas fa-file-alt', techTags:[{text:'Nuxt.js',color:'blue'},{text:'Node.js',color:'purple'}], description:'Nuxt.js + Node.js 開發一套模擬企業內部文件控管與簽核流程的管理系統，支援文件起草人與文管中心／主管等不同角色視角，並提供文件數量、待簽核與核准狀態等統計資訊，協助展示企業文件審核、流程管理與後台系統設計能力。', account:'', password:'', links:[{lid:'_6nwd9gcvk',text:'ISO 文件簽核管理系統',url:'https://dcc-system.vercel.app/',style:'primary',fullWidth:true}], visible:true },
+    { id:'_t056lzrib', title:'Stock台股個股分析系統（Demo）', gradient:'from-blue-500 to-indigo-600', icon:'fas fa-chart-line', techTags:[{text:'React.js',color:'yellow'},{text:'Django',color:'slate'}], description:'React.js + Django 提供台股市場個股的詳細數據，包括即時行情、歷史走勢與基本面資訊。利用網頁圖表庫（如 Highcharts 或 ECharts）將複雜的股價變動、技術指標視覺化。', account:'', password:'', links:[{lid:'_el3q0dkmp',text:'Stock台股個股分析系統',url:'https://stock-django-gamma.vercel.app/',style:'primary',fullWidth:true}], visible:true },
     { id:'p1', title:'資源再生協會<br>網站與管理系統', gradient:'from-blue-500 to-indigo-600', icon:'fas fa-recycle', techTags:[{text:'Nuxt.js',color:'blue'},{text:'Node.js',color:'green'},{text:'RESTful API',color:'purple'}], description:'為 RRA 資源再生協會建置之官方網站與專屬後台管理系統，提供完善的內容發布與資料管理功能。', account:'jerry@rra.com', password:'admin1234', links:[{text:'前台 Demo',url:'https://rra-website.vercel.app/',style:'light'},{text:'後台 Demo',url:'https://rra-website.vercel.app/admin',style:'primary'}] },
     { id:'p2', title:'鋼鐵公會統計網<br>DEMO 平台', gradient:'from-slate-700 to-slate-900', icon:'fas fa-industry', techTags:[{text:'Nuxt 3',color:'blue'},{text:'Laravel 12',color:'red'}], description:'建構鋼鐵產業統計資料庫之展示與查詢平台，前台提供資料視覺化與搜尋，後台負責資料更新與會員權限管理。', account:'admin', password:'Admin@1234', links:[{text:'前台 Demo',url:'https://tsiia-web.vercel.app/',style:'light'},{text:'後台 Demo',url:'https://tsiia-web.vercel.app/login',style:'primary'}] },
     { id:'p3', title:'鋼鐵聯合會<br>公會系統 & 會籍統計', gradient:'from-teal-500 to-emerald-600', icon:'fas fa-users-cog', techTags:[{text:'Vue 3',color:'green'},{text:'Express/Node',color:'yellow'}], description:'開發鋼鐵公會聯合會的對外網站與會籍統計管理系統，數位化整合傳統會務管理流程。', account:'wsa', password:'admin1234', links:[{text:'聯合會前台',url:'https://steel-guild-vue.vercel.app/',style:'light'},{text:'聯合會後台',url:'https://steel-guild-vue.vercel.app/admin',style:'outline'},{text:'會籍統計系統 Demo',url:'https://steelmember-zeta.vercel.app/admin',style:'primary',fullWidth:true}] },
@@ -767,6 +769,7 @@ function openProjectModal(id) {
       <div id="pj-image-preview" class="rounded-lg overflow-hidden" style="height:${p.image?'120px':'0'};transition:height 0.2s;">
         ${p.image?`<img src="${p.image}" style="width:100%;height:120px;object-fit:cover;">`:''}
       </div>
+      <button type="button" class="btn btn-danger text-sm mt-1" id="pj-image-clear-btn" onclick="clearPjImage()" style="${p.image?'':'display:none'}">✕ 刪除封面圖片</button>
       <p class="text-xs text-slate-400 mt-1">未設定圖片時使用漸層色背景</p>
     </div>
     <div class="grid grid-cols-2 gap-4">
@@ -856,15 +859,27 @@ function uploadPjImage(input) {
   img.src = url;
 }
 
+function clearPjImage() {
+  document.getElementById('pj-image').value = '';
+  const wrap = document.getElementById('pj-image-preview');
+  wrap.style.height = '0';
+  wrap.innerHTML = '';
+  const btn = document.getElementById('pj-image-clear-btn');
+  if (btn) btn.style.display = 'none';
+}
+
 function previewPjImage() {
   const src = document.getElementById('pj-image').value.trim();
   const wrap = document.getElementById('pj-image-preview');
+  const btn = document.getElementById('pj-image-clear-btn');
   if (src) {
     wrap.style.height = '120px';
     wrap.innerHTML = `<img src="${src}" style="width:100%;height:120px;object-fit:cover;" onerror="this.parentElement.style.height='0'">`;
+    if (btn) btn.style.display = '';
   } else {
     wrap.style.height = '0';
     wrap.innerHTML = '';
+    if (btn) btn.style.display = 'none';
   }
 }
 
