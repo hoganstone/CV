@@ -362,7 +362,14 @@ const defaultData = {
 };
 
 // ─── Load / Merge Data ─────────────────────────────────────────────────────
-function loadData() {
+async function loadData() {
+  try {
+    const res = await fetch('data.json?v=' + Date.now());
+    if (res.ok) {
+      const parsed = await res.json();
+      return deepMerge(defaultData, parsed);
+    }
+  } catch(e) {}
   try {
     const saved = localStorage.getItem('hogan_cv_data');
     if (saved) {
@@ -709,7 +716,8 @@ window.addEventListener('scroll', () => {
 });
 
 // ─── Init ──────────────────────────────────────────────────────────────────
-const cvData = loadData();
+(async () => {
+const cvData = await loadData();
 applyI18nOverrides(cvData);
 applyHeroAndFooter(cvData);
 renderSkills(cvData.skills);
@@ -774,6 +782,7 @@ ScrollTrigger.create({
 // Education & Certification
 scrollFade('#edu-list > div', { x: -30 });
 scrollFade('#cert-list > li', { x: 30 });
+})();
 </script>
 </body>
 </html>

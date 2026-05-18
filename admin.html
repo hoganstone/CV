@@ -119,6 +119,10 @@
         <div onclick="showSection('password')" class="sidebar-link" data-section="password">
           <i class="fas fa-key w-4"></i> 修改密碼
         </div>
+        <div class="border-t border-slate-700 my-3"></div>
+        <button onclick="exportDataJson()" class="sidebar-link w-full text-left text-emerald-400 hover:text-emerald-300">
+          <i class="fas fa-file-export w-4"></i> 匯出 data.json
+        </button>
       </nav>
     </aside>
 
@@ -1196,6 +1200,16 @@ function loadOtherPanel() {
   document.getElementById('footer-email-val').value = f.email || '';
   document.getElementById('footer-github-val').value = f.githubUrl || '';
   document.getElementById('footer-linkedin-val').value = f.linkedinUrl || '';
+}
+
+function exportDataJson() {
+  const blob = new Blob([JSON.stringify(cvData, null, 2)], { type: 'application/json' });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = 'data.json';
+  a.click();
+  URL.revokeObjectURL(a.href);
+  showToast('data.json 已下載，請放到專案根目錄並上傳到 GitHub');
 }
 
 function resetAllData() {
